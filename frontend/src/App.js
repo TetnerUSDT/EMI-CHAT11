@@ -1,53 +1,91 @@
-import { useEffect } from "react";
-import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import './App.css';
+import 'react-image-crop/dist/ReactCrop.css';
+import AuthScreen from './components/AuthScreen';
+import MainApp from './components/MainApp';
+import { Toaster } from './components/ui/toaster';
+import { LanguageProvider } from './contexts/LanguageContext';
+import { authAPI } from './services/api';
+import EMILogo from './components/ui/logo';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+function App() {
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-const Home = () => {
-  const helloWorldApi = async () => {
+  useEffect(() => {
+    checkExistingAuth();
+  }, []);
+
+  const checkExistingAuth = async () => {
     try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
+      const token = localStorage.getItem('auth_token');
+      const userData = localStorage.getItem('user_data');
+      
+      if (token && userData) {
+        // Verify token is still valid
+        const currentUser = await authAPI.getMe();
+        setUser(currentUser);
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      // Clear invalid auth data
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_data');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
+  const handleAuthSuccess = (userData) => {
+    setUser(userData);
+  };
+
+  const handleUserUpdate = (updatedUser) => {
+    setUser(updatedUser);
+    // Also update localStorage
+    localStorage.setItem('user_data', JSON.stringify(updatedUser));
+  };
+
+  const handleLogout = async () => {
+    try {
+      await authAPI.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setUser(null);
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_data');
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width=%2260%22%20height=%2260%22%20viewBox=%220%200%2060%2060%22%20xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg%20fill=%22none%22%20fill-rule=%22evenodd%22%3E%3Cg%20fill=%22%239C92AC%22%20fill-opacity=%220.1%22%3E%3Ccircle%20cx=%2230%22%20cy=%2230%22%20r=%222%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-50"></div>
+        <div className="text-center relative z-10">
+          <EMILogo size={120} animate={true} className="mx-auto mb-6" />
+          <div className="flex items-center space-x-2 text-purple-300">
+            <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
+            <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+            <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+          </div>
+          <p className="text-purple-300 mt-4 text-lg font-medium">Loading EMI...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
-
-function App() {
-  return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <LanguageProvider>
+      <div className="App">
+        {!user ? (
+          <AuthScreen onAuthSuccess={handleAuthSuccess} />
+        ) : (
+          <MainApp user={user} onLogout={handleLogout} onUserUpdate={handleUserUpdate} />
+        )}
+        <Toaster />
+      </div>
+    </LanguageProvider>
   );
 }
 
