@@ -198,6 +198,7 @@ const ChannelPost = ({
         reactions={post.reactions}
         onReact={handleReact}
         currentUserId={currentUser?.id}
+        onToggleReactionPicker={() => setShowReactionPicker(!showReactionPicker)}
       />
 
       {/* Reaction Picker */}
