@@ -173,6 +173,8 @@ def create_chat_router(db: AsyncIOMotorDatabase) -> APIRouter:
                 last_message_id=new_chat.last_message_id,
                 last_message_time=new_chat.last_message_time,
                 created_by=new_chat.created_by,
+                owner_id=new_chat.owner_id,
+                allow_all_messages=new_chat.allow_all_messages,
                 created_at=new_chat.created_at
             )
             
