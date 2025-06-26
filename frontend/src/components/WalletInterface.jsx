@@ -121,7 +121,10 @@ const WalletInterface = ({ user, onBackToMenu }) => {
       
       // Auto-select the new wallet
       setSelectedWallet(newWallet);
-      setShowWalletModal(true); // Show modal on mobile
+      // Show modal only on mobile
+      if (window.innerWidth < 1024) {
+        setShowWalletModal(true);
+      }
       
     } catch (error) {
       console.error('Error creating wallet:', error);
