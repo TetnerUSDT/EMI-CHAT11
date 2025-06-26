@@ -572,6 +572,46 @@ const ChannelSettings = ({ channel, currentUser, isOpen, onClose, onUpdateChanne
                             <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
                           </label>
                         )}
+                        
+                        {/* Background Settings - Only for owners */}
+                        {isOwner() && (
+                          <div>
+                            <label className="block text-sm font-medium text-gray-400 mb-2">
+                              Channel Background
+                            </label>
+                            <div className="space-y-3">
+                              <div className="grid grid-cols-2 gap-3">
+                                {/* Default Background */}
+                                <div 
+                                  className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                                    backgroundStyle === 'default' 
+                                      ? 'border-emerald-500 bg-emerald-500/10' 
+                                      : 'border-slate-600 hover:border-slate-500'
+                                  }`}
+                                  onClick={() => handleBackgroundChange('default')}
+                                >
+                                  <div className="bg-default-dark h-16 rounded mb-2"></div>
+                                  <p className="text-sm text-white font-medium">Default Dark</p>
+                                  <p className="text-xs text-gray-400">Standard dark theme</p>
+                                </div>
+                                
+                                {/* Dark Structure Background */}
+                                <div 
+                                  className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                                    backgroundStyle === 'dark-structure' 
+                                      ? 'border-emerald-500 bg-emerald-500/10' 
+                                      : 'border-slate-600 hover:border-slate-500'
+                                  }`}
+                                  onClick={() => handleBackgroundChange('dark-structure')}
+                                >
+                                  <div className="bg-dark-structure h-16 rounded mb-2"></div>
+                                  <p className="text-sm text-white font-medium">Dark Structure</p>
+                                  <p className="text-xs text-gray-400">Animated gradient theme</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                     
