@@ -17,7 +17,7 @@ import {
   Download
 } from 'lucide-react';
 
-const MessageReactions = ({ reactions, onReact, currentUserId }) => {
+const MessageReactions = ({ reactions, onReact, currentUserId, onToggleReactionPicker }) => {
   const reactionEmojis = {
     like: '👍',
     love: '❤️',
@@ -46,21 +46,32 @@ const MessageReactions = ({ reactions, onReact, currentUserId }) => {
     return sortedReactions;
   };
 
-  if (getTotalReactions() === 0) return null;
-
   return (
-    <div className="flex items-center space-x-2 mt-2">
-      <div className="flex items-center space-x-1">
-        {getTopReactions().map(([type, users]) => (
-          <div key={type} className="flex items-center space-x-1">
-            <span className="text-sm">{reactionEmojis[type]}</span>
-            <span className="text-xs text-gray-400">{users.length}</span>
+    <div className="flex items-center justify-between mt-2">
+      <div className="flex items-center space-x-2">
+        {getTotalReactions() > 0 && (
+          <div className="flex items-center space-x-1">
+            {getTopReactions().map(([type, users]) => (
+              <div key={type} className="flex items-center space-x-1">
+                <span className="text-sm">{reactionEmojis[type]}</span>
+                <span className="text-xs text-gray-400">{users.length}</span>
+              </div>
+            ))}
+            <span className="text-xs text-gray-500 ml-2">
+              {getTotalReactions()} {getTotalReactions() === 1 ? 'reaction' : 'reactions'}
+            </span>
           </div>
-        ))}
+        )}
       </div>
-      <span className="text-xs text-gray-500">
-        {getTotalReactions()} {getTotalReactions() === 1 ? 'reaction' : 'reactions'}
-      </span>
+      
+      {/* Add Reaction Button */}
+      <button 
+        onClick={onToggleReactionPicker}
+        className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition-colors"
+        title="Add reaction"
+      >
+        <span className="text-lg">❤️</span>
+      </button>
     </div>
   );
 };
