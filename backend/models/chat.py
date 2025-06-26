@@ -54,6 +54,7 @@ class Chat(BaseModel):
     created_by: str
     owner_id: Optional[str] = None  # for channels - who owns the channel
     allow_all_messages: bool = Field(default=False)  # for channels - if all subscribers can send messages
+    background_style: Optional[str] = Field(default="default")  # background style for channels
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     
