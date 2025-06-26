@@ -82,10 +82,10 @@ const MediaContent = ({ media, isVideo = false }) => {
 
   if (isVideo) {
     return (
-      <div className="relative w-full">
+      <div className="relative block">
         <video 
           src={media}
-          className="w-full h-auto"
+          className="w-full h-auto block"
           controls
           poster="/api/placeholder/400/300"
         />
@@ -97,11 +97,12 @@ const MediaContent = ({ media, isVideo = false }) => {
   }
 
   return (
-    <div className="relative w-full">
+    <div className="relative block">
       <img 
         src={media} 
         alt="Posted content"
-        className="w-full h-auto"
+        className="w-full h-auto block"
+        style={{ margin: 0, padding: 0 }}
       />
     </div>
   );
