@@ -590,4 +590,71 @@ def create_chat_router(db: AsyncIOMotorDatabase) -> APIRouter:
                 detail="Failed to update chat"
             )
     
+    @router.patch("/{chat_id}/background")
+    async def update_channel_background(
+        chat_id: str,
+        background_style: str,
+        current_user: dict = Depends(get_current_user)
+    ):
+        """Update channel background style"""
+        try:
+            user_id = current_user["sub"]
+            
+            # Check if chat exists and is a channel
+            from bson import ObjectId
+            chat_filter = {"_id": ObjectId(chat_id)} if ObjectId.is_valid(chat_id) else {"_id": chat_id}
+            chat = await db.chats.find_one(chat_filter)
+            if not chat:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Chat not found"
+                )
+            
+            # Check if it's a channel
+            if chat.get("chat_type") != "channel":
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Background can only be set for channels"
+                )
+            
+            # Check if user is admin/owner
+            if user_id not in chat.get("admins", []) and user_id != chat.get("owner_id"):
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Only administrators can change channel background"
+                )
+            
+            # Validate background style
+            valid_styles = ["default", "dark-structure"]
+            if background_style not in valid_styles:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Invalid background style. Must be one of: {valid_styles}"
+                )
+            
+            # Update background style
+            await db.chats.update_one(
+                chat_filter,
+                {
+                    "$set": {
+                        "background_style": background_style,
+                        "updated_at": datetime.utcnow()
+                    }
+                }
+            )
+            
+            return {
+                "message": "Channel background updated successfully",
+                "background_style": background_style
+            }
+            
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error(f"Error updating channel background: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to update channel background"
+            )
+    
     return router
