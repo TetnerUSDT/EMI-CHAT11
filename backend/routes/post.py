@@ -196,7 +196,7 @@ def create_post_router(db: AsyncIOMotorDatabase) -> APIRouter:
                     detail="Channel not found"
                 )
             
-            user_id = current_user["id"]
+            user_id = current_user["sub"]
             if user_id not in channel.get("participants", []):
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
