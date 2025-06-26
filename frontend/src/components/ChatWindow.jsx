@@ -466,7 +466,13 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
       </div>
 
       {/* Messages/Posts */}
-      <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${isChannel ? 'bg-gray-100' : ''}`}>
+      <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${
+        isChannel 
+          ? chat?.background_style === 'dark-structure' 
+            ? 'bg-dark-structure' 
+            : 'bg-default-dark'
+          : ''
+      }`}>
         {isLoading ? (
           <div className="flex justify-center items-center h-full">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400"></div>
