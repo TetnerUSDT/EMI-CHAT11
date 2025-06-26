@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Провести аудит и исправить критические проблемы в проекте EMI"
+user_problem_statement: "Исправить проблемы отображения новостей в разделе Channels: 1) Позиционировать все новости слева вместо центра, 2) Вынести аватар канала слева от новости с отступом 10px и позиционировать текст слева"
 
 backend:
   - task: "Create Web3Auth Utility"
