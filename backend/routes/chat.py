@@ -546,7 +546,7 @@ def create_chat_router(db: AsyncIOMotorDatabase) -> APIRouter:
             update_data = {"updated_at": datetime.utcnow()}
             
             # Only allow updating certain fields
-            allowed_fields = ["name", "description", "avatar", "allow_all_messages"]
+            allowed_fields = ["name", "description", "avatar", "allow_all_messages", "background_style"]
             for field in allowed_fields:
                 if field in chat_update:
                     update_data[field] = chat_update[field]
