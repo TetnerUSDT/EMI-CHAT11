@@ -100,10 +100,26 @@ const MainApp = ({ user, onLogout, onUserUpdate }) => {
     });
   };
 
-  const handleChatUpdate = (chatId, updates) => {
-    setChats(prev => prev.map(chat => 
-      chat.id === chatId ? { ...chat, ...updates } : chat
-    ));
+  const handleChatUpdate = (updatedChat) => {
+    // Обновляем соответствующий список в зависимости от типа чата
+    if (updatedChat.chat_type === 'personal') {
+      setChats(prev => prev.map(chat => 
+        chat.id === updatedChat.id ? updatedChat : chat
+      ));
+    } else if (updatedChat.chat_type === 'channel') {
+      setChannels(prev => prev.map(channel => 
+        channel.id === updatedChat.id ? updatedChat : channel
+      ));
+    } else if (updatedChat.chat_type === 'group') {
+      setGroups(prev => prev.map(group => 
+        group.id === updatedChat.id ? updatedChat : group
+      ));
+    }
+    
+    // Обновляем выбранный чат если он совпадает
+    if (selectedChat && selectedChat.id === updatedChat.id) {
+      setSelectedChat(updatedChat);
+    }
   };
 
   const handleUserUpdate = (updatedUser) => {
