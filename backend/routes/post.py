@@ -6,7 +6,7 @@ from bson import ObjectId
 from datetime import datetime
 
 from ..models.post import Post, PostCreate, PostResponse, ReactionCreate, MediaType, PostType
-from ..models.user import UserInDB, User
+from ..models.user import User
 from ..auth import get_current_user
 
 logger = logging.getLogger(__name__)
