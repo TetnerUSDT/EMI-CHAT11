@@ -456,16 +456,6 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
               <Search className="w-4 h-4" />
             </Button>
             
-            {/* Phone call button */}
-            <Button size="sm" variant="ghost" className="text-gray-400 hover:text-white p-2">
-              <Phone className="w-4 h-4" />
-            </Button>
-            
-            {/* Video call button - hidden on small screens */}
-            <Button size="sm" variant="ghost" className="hidden sm:flex text-gray-400 hover:text-white p-2">
-              <Video className="w-4 h-4" />
-            </Button>
-            
             {/* More options */}
             <Button size="sm" variant="ghost" className="text-gray-400 hover:text-white p-2">
               <MoreVertical className="w-4 h-4" />
