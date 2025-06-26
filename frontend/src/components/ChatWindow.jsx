@@ -685,7 +685,8 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
             <Send className="w-4 h-4" />
           </Button>
         </form>
-      </div>
+        </div>
+      )}
     </div>
   );
 };
