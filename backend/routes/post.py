@@ -102,7 +102,7 @@ def create_post_router(db: AsyncIOMotorDatabase) -> APIRouter:
         channel_id: str,
         page: int = 1,
         limit: int = 20,
-        current_user: UserInDB = Depends(get_current_user)
+        current_user: User = Depends(get_current_user)
     ):
         """Get posts from a channel"""
         try:
