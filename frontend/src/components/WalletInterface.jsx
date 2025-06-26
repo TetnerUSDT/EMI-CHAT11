@@ -91,7 +91,10 @@ const WalletInterface = ({ user, onBackToMenu }) => {
 
   const handleSelectWallet = (wallet) => {
     setSelectedWallet(wallet);
-    setShowWalletModal(true); // Show modal on mobile
+    // Show modal only on mobile
+    if (window.innerWidth < 1024) {
+      setShowWalletModal(true);
+    }
   };
 
   const handleCreateWallet = async (networkId, walletName) => {
