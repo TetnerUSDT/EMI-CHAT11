@@ -8,7 +8,7 @@ from eth_account import Account
 from eth_account.messages import encode_defunct
 
 # Get the backend URL from the frontend .env file
-BACKEND_URL = "https://72d55a8e-95d9-4262-ae04-b41bc079404d.preview.emergentagent.com/api"
+BACKEND_URL = "https://fff1c6e1-4c7e-4a69-a7f5-c09436cc10c8.preview.emergentagent.com/api"
 
 # Test wallet addresses and private keys for different networks
 # WARNING: These are test keys only, never use in production
