@@ -231,51 +231,53 @@ const WalletInterface = ({ user, onBackToMenu }) => {
               walletsCount={walletsCount}
             />
           </div>
-          
-          <div className="flex-1 flex">
-            {/* Wallet List */}
-            <div className="h-full w-96">
-              <WalletList 
-                network={selectedNetwork}
-                wallets={getCurrentWallets()}
-                selectedWallet={selectedWallet}
-                onSelectWallet={handleSelectWallet}
-                onCreateWallet={handleCreateWallet}
-                onBack={handleBackToNetworks}
-                isLoading={isLoading}
-              />
+          {!selectedNetwork ? (
+            {/* When no network selected - show single placeholder */}
+            <div className="flex-1 h-full flex items-center justify-center bg-slate-800/50">
+              <div className="text-center text-gray-400">
+                <Wallet className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                <h3 className="text-xl font-semibold mb-2">Choose a blockchain network</h3>
+                <p className="text-sm">Select a network from the list to view and manage your wallets</p>
+              </div>
             </div>
-            
-            {/* Wallet Details - Full width for better experience */}
-            <div className="flex-1">
-              {selectedWallet ? (
-                <WalletDetails 
-                  wallet={selectedWallet}
+          ) : (
+            <div className="flex-1 flex">
+              {/* Wallet List */}
+              <div className="h-full w-96">
+                <WalletList 
                   network={selectedNetwork}
-                  transactions={getCurrentTransactions()}
-                  onBack={handleBackToWallets}
-                  onSendTransaction={handleSendTransaction}
-                  onRefreshBalance={handleRefreshBalance}
+                  wallets={getCurrentWallets()}
+                  selectedWallet={selectedWallet}
+                  onSelectWallet={handleSelectWallet}
+                  onCreateWallet={handleCreateWallet}
+                  onBack={handleBackToNetworks}
+                  isLoading={isLoading}
                 />
-              ) : selectedNetwork ? (
-                <div className="h-full flex items-center justify-center bg-slate-800/50">
-                  <div className="text-center text-gray-400">
-                    <Wallet className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                    <h3 className="text-xl font-semibold mb-2">Select a wallet to manage</h3>
-                    <p className="text-sm">Choose a wallet from the list to start managing your crypto assets</p>
+              </div>
+              
+              {/* Wallet Details - Full width for better experience */}
+              <div className="flex-1">
+                {selectedWallet ? (
+                  <WalletDetails 
+                    wallet={selectedWallet}
+                    network={selectedNetwork}
+                    transactions={getCurrentTransactions()}
+                    onBack={handleBackToWallets}
+                    onSendTransaction={handleSendTransaction}
+                    onRefreshBalance={handleRefreshBalance}
+                  />
+                ) : (
+                  <div className="h-full flex items-center justify-center bg-slate-800/50">
+                    <div className="text-center text-gray-400">
+                      <Wallet className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                      <h3 className="text-xl font-semibold mb-2">Select a wallet to manage</h3>
+                      <p className="text-sm">Choose a wallet from the list to start managing your crypto assets</p>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <div className="h-full flex items-center justify-center bg-slate-800/50">
-                  <div className="text-center text-gray-400">
-                    <Wallet className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                    <h3 className="text-xl font-semibold mb-2">Choose a blockchain network</h3>
-                    <p className="text-sm">Select a network from the list to view and manage your wallets</p>
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Mobile Layout */}
