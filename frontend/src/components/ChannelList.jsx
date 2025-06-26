@@ -233,6 +233,26 @@ const ChannelList = ({
 
   const displayChannels = searchQuery ? searchResults : channels;
   const isSubscribed = (channel) => channel.participants?.includes(currentUser?.id);
+  const isChannelOwner = (channel) => channel.owner_id === currentUser?.id;
+
+  const handleOpenChannelSettings = (channel, e) => {
+    e.stopPropagation();
+    setSettingsChannel(channel);
+    setShowChannelSettings(true);
+  };
+
+  const handleUpdateChannel = async (updatedChannel) => {
+    try {
+      if (onUpdateChannel) {
+        await onUpdateChannel(updatedChannel);
+      }
+      setShowChannelSettings(false);
+      setSettingsChannel(null);
+    } catch (error) {
+      console.error('Error updating channel:', error);
+      throw error;
+    }
+  };
 
   return (
     <div className="w-full lg:w-80 h-full bg-slate-800 border-r border-slate-700 flex flex-col">
