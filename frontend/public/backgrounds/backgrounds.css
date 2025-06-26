@@ -1,0 +1,63 @@
+/* Dark Structure Background */
+.bg-dark-structure {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #334155 100%);
+  background-size: 400% 400%;
+  animation: darkStructureGradient 15s ease infinite;
+  position: relative;
+}
+
+.bg-dark-structure::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(34, 197, 94, 0.05) 0%, transparent 50%);
+  background-size: 300px 300px, 200px 200px, 400px 400px;
+  background-position: 0 0, 100% 100%, 50% 50%;
+  animation: darkStructureFloat 20s ease-in-out infinite;
+}
+
+.bg-dark-structure::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(90deg, transparent 0%, rgba(15, 23, 42, 0.3) 50%, transparent 100%),
+    linear-gradient(0deg, transparent 0%, rgba(15, 23, 42, 0.3) 50%, transparent 100%);
+  background-size: 60px 100%, 100% 60px;
+  opacity: 0.4;
+}
+
+@keyframes darkStructureGradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes darkStructureFloat {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(10px, -10px) rotate(1deg);
+  }
+  66% {
+    transform: translate(-5px, 5px) rotate(-1deg);
+  }
+}
+
+/* Default Dark Background */
+.bg-default-dark {
+  background: #1e293b;
+}
