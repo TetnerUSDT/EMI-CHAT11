@@ -145,6 +145,8 @@ def create_chat_router(db: AsyncIOMotorDatabase) -> APIRouter:
                 is_public=chat_data.is_public,
                 channel_username=chat_data.channel_username,
                 subscriber_count=0 if chat_data.chat_type == ChatType.CHANNEL else len(participants),
+                owner_id=user_id if chat_data.chat_type == ChatType.CHANNEL else None,
+                allow_all_messages=False,  # Default to admin-only for channels
                 created_by=user_id
             )
             
