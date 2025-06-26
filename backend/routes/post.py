@@ -265,7 +265,7 @@ def create_post_router(db: AsyncIOMotorDatabase) -> APIRouter:
                     detail="Channel not found"
                 )
             
-            user_id = current_user["id"]
+            user_id = current_user["sub"]
             is_owner = channel.get("owner_id") == user_id
             is_admin = user_id in channel.get("admins", [])
             is_author = post.get("author_id") == user_id
