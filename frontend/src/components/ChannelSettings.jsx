@@ -455,12 +455,12 @@ const ChannelSettings = ({ channel, currentUser, isOpen, onClose, onUpdateChanne
                           <Avatar className="w-10 h-10">
                             <AvatarImage src={admin.avatar} />
                             <AvatarFallback className="bg-emerald-600 text-white">
-                              {admin.name.charAt(0).toUpperCase()}
+                              {(admin.name || admin.username || 'A').charAt(0).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <h4 className="text-white font-medium">{admin.name}</h4>
-                            <p className="text-gray-400 text-sm">@{admin.username}</p>
+                            <h4 className="text-white font-medium">{admin.name || admin.username || 'Anonymous'}</h4>
+                            <p className="text-gray-400 text-sm">@{admin.username || 'unknown'}</p>
                           </div>
                           <div className="flex items-center space-x-1">
                             {admin.role === 'owner' ? (
