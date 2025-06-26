@@ -192,6 +192,18 @@ backend:
         agent: "main"
         comment: "Добавлены зависимости web3, eth-account, tronpy для работы с блокчейнами. Зависимости успешно установлены, сервер перезапущен."
 
+  - task: "Remove Exchange 24 Review Text and Button from Channel Posts"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/ChannelPost.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Удален автоматически добавляемый текст 'Спасибо, что выбрали Exchange 24 💛' и ссылка на отзывы из новостей канала. Убрана кнопка 'Оставить отзыв'. Добавлена обратно возможность ставить реакции с кнопкой-сердечком для открытия picker'а реакций."
+
 frontend:
   - task: "Create EMI Logo Component"
     implemented: true
