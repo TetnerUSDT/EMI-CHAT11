@@ -29,6 +29,37 @@ const ChannelSettings = ({ channel, currentUser, isOpen, onClose, onUpdateChanne
   const [channelDescription, setChannelDescription] = useState(channel?.description || '');
   const [allowAllMessages, setAllowAllMessages] = useState(channel?.allow_all_messages || false);
   const [backgroundStyle, setBackgroundStyle] = useState(channel?.background_style || 'default');
+
+  const handleBackgroundChange = async (style) => {
+    try {
+      const updateData = {
+        background_style: style
+      };
+      
+      // Call API to update channel background
+      const updatedChannel = await chatAPI.updateChat(channel.id, updateData);
+      
+      // Update local state
+      setBackgroundStyle(style);
+      
+      // Notify parent component
+      if (onUpdateChannel) {
+        await onUpdateChannel(updatedChannel);
+      }
+      
+      toast({
+        title: "Background Updated",
+        description: "Channel background has been updated successfully.",
+      });
+    } catch (error) {
+      console.error('Error updating background:', error);
+      toast({
+        title: "Update Failed",
+        description: error.response?.data?.detail || "Failed to update background. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
   const [newAdminUsername, setNewAdminUsername] = useState('');
   const [newSubscriberUsername, setNewSubscriberUsername] = useState('');
   const [isUploading, setIsUploading] = useState(false);
