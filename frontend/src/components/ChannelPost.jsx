@@ -152,19 +152,9 @@ const ChannelPost = ({
   };
 
   return (
-    <div className="flex items-start space-x-3 mb-6 w-full">
-      {/* Channel Avatar - Left side with 10px gap */}
-      <div className="flex-shrink-0 mt-2">
-        <Avatar className="w-12 h-12 border-4 border-white shadow-lg">
-          <AvatarImage src={post.author_avatar} />
-          <AvatarFallback className="bg-yellow-500 text-white font-bold">
-            24
-          </AvatarFallback>
-        </Avatar>
-      </div>
-      
-      {/* News Content - Right side, aligned left */}
-      <div className="flex-1 bg-white rounded-lg shadow-lg overflow-hidden relative">
+    <div className="mb-6 w-full relative">
+      {/* News Content - Width determined by image proportions */}
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden inline-block max-w-md">
         {/* Media Content - Top */}
         {post.media_url && (
           <div className="relative">
@@ -216,6 +206,16 @@ const ChannelPost = ({
             ))}
           </div>
         )}
+      </div>
+      
+      {/* Channel Avatar - Bottom left with 10px gap from news block */}
+      <div className="absolute -bottom-2 -left-2 z-10">
+        <Avatar className="w-12 h-12 border-4 border-white shadow-lg">
+          <AvatarImage src={post.author_avatar} />
+          <AvatarFallback className="bg-yellow-500 text-white font-bold">
+            24
+          </AvatarFallback>
+        </Avatar>
       </div>
     </div>
   );
