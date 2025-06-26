@@ -187,8 +187,16 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
 
   const handleCreatePost = async (newPost) => {
     try {
+      const postData = {
+        text: newPost.text,
+        media_url: newPost.media,
+        media_type: newPost.media_type
+      };
+
+      const createdPost = await postAPI.createPost(chat.id, postData);
+      
       // Add the new post to the beginning of the posts array
-      setPosts(prevPosts => [newPost, ...prevPosts]);
+      setPosts(prevPosts => [createdPost, ...prevPosts]);
       
       toast({
         title: "Post Created",
@@ -196,6 +204,11 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
       });
     } catch (error) {
       console.error('Error creating post:', error);
+      toast({
+        title: "Post Failed",
+        description: error.response?.data?.detail || "Failed to create post. Please try again.",
+        variant: "destructive"
+      });
       throw error;
     }
   };
