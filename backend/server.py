@@ -14,6 +14,7 @@ from datetime import datetime
 from .routes.auth import create_auth_router
 from .routes.chat import create_chat_router
 from .routes.user import create_user_router
+from .routes.post import create_post_router
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
