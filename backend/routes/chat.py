@@ -505,4 +505,89 @@ def create_chat_router(db: AsyncIOMotorDatabase) -> APIRouter:
                 detail="Failed to toggle chat pin"
             )
     
+    @router.put("/{chat_id}", response_model=ChatResponse)
+    async def update_chat(
+        chat_id: str,
+        chat_update: dict,
+        current_user: dict = Depends(get_current_user)
+    ):
+        """Update chat information (name, description, avatar, etc.)"""
+        try:
+            user_id = current_user["sub"]
+            
+            # Check if chat exists and user has access
+            from bson import ObjectId
+            chat_filter = {"_id": ObjectId(chat_id)} if ObjectId.is_valid(chat_id) else {"_id": chat_id}
+            chat = await db.chats.find_one(chat_filter)
+            if not chat:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Chat not found"
+                )
+            
+            # Check if user is owner or admin
+            is_owner = chat.get("owner_id") == user_id
+            is_admin = user_id in chat.get("admins", [])
+            
+            if not (is_owner or is_admin):
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Only channel owners and administrators can update channel settings"
+                )
+            
+            # Validate required fields
+            if "name" in chat_update and not chat_update["name"].strip():
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Channel name cannot be empty"
+                )
+            
+            # Prepare update data
+            update_data = {"updated_at": datetime.utcnow()}
+            
+            # Only allow updating certain fields
+            allowed_fields = ["name", "description", "avatar", "allow_all_messages"]
+            for field in allowed_fields:
+                if field in chat_update:
+                    update_data[field] = chat_update[field]
+            
+            # Update the chat
+            await db.chats.update_one(
+                chat_filter,
+                {"$set": update_data}
+            )
+            
+            # Return updated chat
+            updated_chat = await db.chats.find_one(chat_filter)
+            
+            return ChatResponse(
+                id=str(updated_chat["_id"]),
+                name=updated_chat.get("name"),
+                chat_type=updated_chat.get("chat_type"),
+                participants=updated_chat.get("participants", []),
+                admins=updated_chat.get("admins", []),
+                avatar=updated_chat.get("avatar"),
+                description=updated_chat.get("description"),
+                is_secret=updated_chat.get("is_secret", False),
+                secret_timer=updated_chat.get("secret_timer"),
+                is_public=updated_chat.get("is_public", False),
+                channel_username=updated_chat.get("channel_username"),
+                subscriber_count=updated_chat.get("subscriber_count", 0),
+                last_message_id=updated_chat.get("last_message_id"),
+                last_message_time=updated_chat.get("last_message_time"),
+                created_by=updated_chat.get("created_by"),
+                owner_id=updated_chat.get("owner_id"),
+                allow_all_messages=updated_chat.get("allow_all_messages", False),
+                created_at=updated_chat.get("created_at")
+            )
+            
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error(f"Error updating chat: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to update chat"
+            )
+    
     return router
