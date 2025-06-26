@@ -99,6 +99,8 @@ async def startup_event():
         await db.users.create_index([("wallet_address", 1), ("network", 1)], unique=True)
         await db.chats.create_index("participants")
         await db.messages.create_index([("chat_id", 1), ("timestamp", -1)])
+        await db.posts.create_index([("channel_id", 1), ("created_at", -1)])
+        await db.posts.create_index("author_id")
         logger.info("Database indexes created successfully")
     except Exception as e:
         logger.warning(f"Error creating indexes: {e}")
