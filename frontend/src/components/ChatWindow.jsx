@@ -599,7 +599,20 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
         onClose={() => setShowFileUploader(false)}
       />
 
-      {/* Input */}
+      {/* Post Creator for Channels */}
+      {isChannel && (
+        <PostCreator
+          currentUser={currentUser}
+          channel={chat}
+          isOpen={showPostCreator}
+          onClose={() => setShowPostCreator(false)}
+          onCreatePost={handleCreatePost}
+          canPost={canPost}
+        />
+      )}
+
+      {/* Input - Hide for channels if user can't post */}
+      {(!isChannel || canPost) && (
       <div className="p-4 border-t border-slate-700 bg-slate-800/80 backdrop-blur-sm relative">
         <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
           <Button
