@@ -340,6 +340,17 @@ const ChannelList = ({
                             {formatTime(channel.last_message_time)}
                           </span>
                         )}
+                        {subscribed && isChannelOwner(channel) && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={(e) => handleOpenChannelSettings(channel, e)}
+                            className="text-gray-400 hover:text-white p-1"
+                            title="Channel Settings"
+                          >
+                            <Settings className="w-4 h-4" />
+                          </Button>
+                        )}
                         {!subscribed && searchQuery && (
                           <Button
                             size="sm"
