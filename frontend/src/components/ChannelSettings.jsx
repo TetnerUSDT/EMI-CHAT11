@@ -85,14 +85,27 @@ const ChannelSettings = ({ channel, currentUser, isOpen, onClose, onUpdateChanne
   };
 
   const handleSaveChanges = async () => {
+    // Валидация названия канала
+    if (!channelName || !channelName.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Channel name cannot be empty.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
-      const updatedChannel = {
-        ...channel,
-        name: channelName,
-        description: channelDescription,
+      const updateData = {
+        name: channelName.trim(),
+        description: channelDescription.trim(),
         allow_all_messages: allowAllMessages
       };
 
+      // Вызываем API для обновления
+      const updatedChannel = await chatAPI.updateChat(channel.id, updateData);
+
+      // Уведомляем родительский компонент об обновлении
       if (onUpdateChannel) {
         await onUpdateChannel(updatedChannel);
       }
@@ -107,7 +120,7 @@ const ChannelSettings = ({ channel, currentUser, isOpen, onClose, onUpdateChanne
       console.error('Error updating channel:', error);
       toast({
         title: "Update Failed",
-        description: "Failed to update channel settings. Please try again.",
+        description: error.response?.data?.detail || "Failed to update channel settings. Please try again.",
         variant: "destructive"
       });
     }
