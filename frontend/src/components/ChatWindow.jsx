@@ -611,8 +611,7 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
         />
       )}
 
-      {/* Input - Hide for channels if user can't post */}
-      {(!isChannel || canPost) && (
+      {/* Post Creator for Channels */}
       {isChannel && (
         <PostCreator
           currentUser={currentUser}
