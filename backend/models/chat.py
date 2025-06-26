@@ -96,6 +96,7 @@ class ChatResponse(BaseModel):
     created_by: str
     owner_id: Optional[str] = None
     allow_all_messages: bool = False
+    background_style: Optional[str] = "default"
     created_at: datetime
 
 class MessageResponse(BaseModel):
