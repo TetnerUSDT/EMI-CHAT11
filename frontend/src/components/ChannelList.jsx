@@ -386,6 +386,18 @@ const ChannelList = ({
           })
         )}
       </div>
+
+      {/* Channel Settings Modal */}
+      <ChannelSettings
+        channel={settingsChannel}
+        currentUser={currentUser}
+        isOpen={showChannelSettings}
+        onClose={() => {
+          setShowChannelSettings(false);
+          setSettingsChannel(null);
+        }}
+        onUpdateChannel={handleUpdateChannel}
+      />
     </div>
   );
 };
