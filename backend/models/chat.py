@@ -93,6 +93,8 @@ class ChatResponse(BaseModel):
     last_message_id: Optional[str]
     last_message_time: Optional[datetime]
     created_by: str
+    owner_id: Optional[str]
+    allow_all_messages: bool
     created_at: datetime
 
 class MessageResponse(BaseModel):
