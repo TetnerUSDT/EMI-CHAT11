@@ -38,25 +38,25 @@ def create_chat_router(db: AsyncIOMotorDatabase) -> APIRouter:
             
             chat_responses = []
             for chat_doc in chats:
-                chat = Chat(**chat_doc)
-                chat.id = str(chat_doc["_id"])  # Set proper ID from MongoDB
                 chat_responses.append(ChatResponse(
-                    id=chat.id,
-                    name=chat.name,
-                    chat_type=chat.chat_type,
-                    participants=chat.participants,
-                    admins=chat.admins,
-                    avatar=chat.avatar,
-                    description=chat.description,
-                    is_secret=chat.is_secret,
-                    secret_timer=chat.secret_timer,
-                    is_public=chat.is_public,
-                    channel_username=chat.channel_username,
-                    subscriber_count=chat.subscriber_count,
-                    last_message_id=chat.last_message_id,
-                    last_message_time=chat.last_message_time,
-                    created_by=chat.created_by,
-                    created_at=chat.created_at
+                    id=str(chat_doc["_id"]),
+                    name=chat_doc.get("name"),
+                    chat_type=chat_doc.get("chat_type"),
+                    participants=chat_doc.get("participants", []),
+                    admins=chat_doc.get("admins", []),
+                    avatar=chat_doc.get("avatar"),
+                    description=chat_doc.get("description"),
+                    is_secret=chat_doc.get("is_secret", False),
+                    secret_timer=chat_doc.get("secret_timer"),
+                    is_public=chat_doc.get("is_public", False),
+                    channel_username=chat_doc.get("channel_username"),
+                    subscriber_count=chat_doc.get("subscriber_count", 0),
+                    last_message_id=chat_doc.get("last_message_id"),
+                    last_message_time=chat_doc.get("last_message_time"),
+                    created_by=chat_doc.get("created_by"),
+                    owner_id=chat_doc.get("owner_id"),
+                    allow_all_messages=chat_doc.get("allow_all_messages", False),
+                    created_at=chat_doc.get("created_at")
                 ))
             
             return chat_responses
