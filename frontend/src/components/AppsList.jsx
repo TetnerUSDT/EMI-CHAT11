@@ -132,12 +132,7 @@ const AppsList = ({
           <Button
             size="sm"
             className="bg-emerald-600 hover:bg-emerald-700 text-white"
-            onClick={() => {
-              toast({
-                title: "App Store",
-                description: "Browse more apps in the store!",
-              });
-            }}
+            onClick={() => setShowStoreModal(true)}
           >
             <ExternalLink className="w-4 h-4 mr-2" />
             Store
