@@ -28,6 +28,7 @@ const ChannelSettings = ({ channel, currentUser, isOpen, onClose, onUpdateChanne
   const [channelName, setChannelName] = useState(channel?.name || '');
   const [channelDescription, setChannelDescription] = useState(channel?.description || '');
   const [allowAllMessages, setAllowAllMessages] = useState(channel?.allow_all_messages || false);
+  const [backgroundStyle, setBackgroundStyle] = useState(channel?.background_style || 'default');
   const [newAdminUsername, setNewAdminUsername] = useState('');
   const [newSubscriberUsername, setNewSubscriberUsername] = useState('');
   const [isUploading, setIsUploading] = useState(false);
