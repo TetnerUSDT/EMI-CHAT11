@@ -521,12 +521,12 @@ const ChannelSettings = ({ channel, currentUser, isOpen, onClose, onUpdateChanne
                           <Avatar className="w-10 h-10">
                             <AvatarImage src={subscriber.avatar} />
                             <AvatarFallback className="bg-gray-600 text-white">
-                              {subscriber.name.charAt(0).toUpperCase()}
+                              {(subscriber.name || subscriber.username || 'S').charAt(0).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <h4 className="text-white font-medium">{subscriber.name}</h4>
-                            <p className="text-gray-400 text-sm">@{subscriber.username}</p>
+                            <h4 className="text-white font-medium">{subscriber.name || subscriber.username || 'Anonymous'}</h4>
+                            <p className="text-gray-400 text-sm">@{subscriber.username || 'unknown'}</p>
                             <p className="text-gray-500 text-xs">Joined {formatDate(subscriber.joined_date)}</p>
                           </div>
                         </div>
