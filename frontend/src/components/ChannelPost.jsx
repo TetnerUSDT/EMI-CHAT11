@@ -82,13 +82,12 @@ const MediaContent = ({ media, isVideo = false }) => {
 
   if (isVideo) {
     return (
-      <div className="relative">
+      <div className="relative w-full">
         <video 
           src={media}
-          className="w-full h-auto object-contain"
+          className="w-full h-auto"
           controls
           poster="/api/placeholder/400/300"
-          style={{ maxHeight: '250px' }}
         />
         <div className="absolute top-2 right-2 bg-black/60 rounded-lg px-2 py-1">
           <span className="text-white text-xs">00:17</span>
@@ -98,12 +97,11 @@ const MediaContent = ({ media, isVideo = false }) => {
   }
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <img 
         src={media} 
         alt="Posted content"
-        className="w-full h-auto object-contain"
-        style={{ maxHeight: '250px' }}
+        className="w-full h-auto"
       />
     </div>
   );
