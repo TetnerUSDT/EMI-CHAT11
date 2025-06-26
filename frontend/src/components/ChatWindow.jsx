@@ -221,6 +221,74 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
     setShowStickers(false);
   };
 
+  const handleCreatePost = async (newPost) => {
+    try {
+      // Add the new post to the beginning of the posts array
+      setPosts(prevPosts => [newPost, ...prevPosts]);
+      
+      toast({
+        title: "Post Created",
+        description: "Your post has been published successfully.",
+      });
+    } catch (error) {
+      console.error('Error creating post:', error);
+      throw error;
+    }
+  };
+
+  const handleReactToPost = async (postId, reactionType, userId) => {
+    try {
+      setPosts(prevPosts => 
+        prevPosts.map(post => {
+          if (post.id === postId) {
+            const updatedReactions = { ...post.reactions };
+            
+            // Initialize reaction type if it doesn't exist
+            if (!updatedReactions[reactionType]) {
+              updatedReactions[reactionType] = [];
+            }
+            
+            // Toggle user reaction
+            if (updatedReactions[reactionType].includes(userId)) {
+              updatedReactions[reactionType] = updatedReactions[reactionType].filter(id => id !== userId);
+            } else {
+              // Remove user from other reactions first
+              Object.keys(updatedReactions).forEach(type => {
+                updatedReactions[type] = updatedReactions[type].filter(id => id !== userId);
+              });
+              // Add to new reaction
+              updatedReactions[reactionType].push(userId);
+            }
+            
+            return { ...post, reactions: updatedReactions };
+          }
+          return post;
+        })
+      );
+    } catch (error) {
+      console.error('Error reacting to post:', error);
+      toast({
+        title: "Reaction Failed",
+        description: "Failed to add reaction. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleCommentOnPost = (postId) => {
+    toast({
+      title: "Comments",
+      description: "Comments feature coming soon!",
+    });
+  };
+
+  const handleSharePost = (postId) => {
+    toast({
+      title: "Share",
+      description: "Share feature coming soon!",
+    });
+  };
+
   const handleVoiceMessage = async (voiceData) => {
     try {
       const messageData = {
