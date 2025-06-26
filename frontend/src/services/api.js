@@ -118,6 +118,12 @@ export const chatAPI = {
   toggleChatPin: async (chatId) => {
     const response = await api.patch(`/chats/${chatId}/pin`);
     return response.data;
+  },
+
+  // Update chat information
+  updateChat: async (chatId, updateData) => {
+    const response = await api.put(`/chats/${chatId}`, updateData);
+    return response.data;
   }
 };
 
