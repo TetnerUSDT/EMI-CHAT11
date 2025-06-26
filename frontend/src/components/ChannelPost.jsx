@@ -166,9 +166,9 @@ const ChannelPost = ({
       
       {/* News Content - Right of avatar, width adapts to image */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-sm lg:max-w-sm" style={{ minWidth: '250px', maxWidth: '350px' }}>
-        {/* Media Content - Top */}
+        {/* Media Content - Top - No padding/margins */}
         {post.media_url && (
-          <div className="relative">
+          <div className="relative" style={{ margin: 0, padding: 0 }}>
             <MediaContent 
               media={post.media_url} 
               isVideo={post.media_type === 'video'} 
