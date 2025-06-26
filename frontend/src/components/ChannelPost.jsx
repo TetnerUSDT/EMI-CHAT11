@@ -71,10 +71,10 @@ const MediaContent = ({ media, isVideo = false }) => {
 
   if (isVideo) {
     return (
-      <div className="relative max-w-md">
+      <div className="relative w-full">
         <video 
           src={media}
-          className="w-full rounded-lg"
+          className="w-full h-64 object-cover"
           controls
           poster="/api/placeholder/400/300"
         />
@@ -86,11 +86,11 @@ const MediaContent = ({ media, isVideo = false }) => {
   }
 
   return (
-    <div className="relative max-w-md">
+    <div className="relative w-full">
       <img 
         src={media} 
         alt="Posted content"
-        className="w-full rounded-lg object-cover max-h-96"
+        className="w-full h-64 object-cover"
       />
     </div>
   );
@@ -141,137 +141,88 @@ const ChannelPost = ({
   };
 
   return (
-    <div className="bg-slate-800 rounded-xl p-4 border border-slate-700 mb-4">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center space-x-3">
-          <Avatar className="w-10 h-10">
-            <AvatarImage src={post.author_avatar} />
-            <AvatarFallback className="bg-emerald-600 text-white">
-              {post.author_name?.charAt(0) || post.channel_name?.charAt(0) || 'C'}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <div className="flex items-center space-x-2">
-              <h4 className="font-semibold text-white">
-                {post.channel_name || post.author_name}
-              </h4>
-              {isChannel && (
-                <Badge className="bg-blue-500/20 text-blue-400 text-xs">✓</Badge>
-              )}
-            </div>
-            <div className="flex items-center space-x-2 text-xs text-gray-400">
-              <span>{formatTime(post.created_at)}</span>
-              {isChannel && (
-                <>
-                  <span>•</span>
-                  <div className="flex items-center space-x-1">
-                    <Eye className="w-3 h-3" />
-                    <span>{formatViewCount(viewCount)}</span>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-        <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
-          <MoreHorizontal className="w-4 h-4" />
-        </Button>
-      </div>
-
-      {/* Content */}
-      <div className="space-y-3">
-        {/* Text Content */}
-        {post.text && (
-          <div className="text-gray-200 leading-relaxed">
-            {post.text}
-          </div>
-        )}
-
-        {/* Media Content */}
-        {post.media_url && (
+    <div className="max-w-sm bg-white rounded-lg shadow-lg overflow-hidden mb-6 mx-auto relative">
+      {/* Media Content - Top */}
+      {post.media_url && (
+        <div className="relative">
           <MediaContent 
             media={post.media_url} 
             isVideo={post.media_type === 'video'} 
           />
-        )}
-
-        {/* Reactions */}
-        <MessageReactions 
-          reactions={post.reactions}
-          onReact={handleReact}
-          currentUserId={currentUser?.id}
-        />
-
-        {/* Action Buttons */}
-        <div className="flex items-center justify-between pt-2 border-t border-slate-700">
-          <div className="flex items-center space-x-4">
-            {/* Reaction Button */}
-            <div className="relative">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowReactionPicker(!showReactionPicker)}
-                className="text-gray-400 hover:text-white hover:bg-slate-700"
-              >
-                <Heart className="w-4 h-4 mr-1" />
-                <span className="text-sm">React</span>
-              </Button>
-              
-              {/* Reaction Picker */}
-              {showReactionPicker && (
-                <div className="absolute bottom-full left-0 mb-2 bg-slate-700 rounded-lg p-2 flex space-x-1 z-10 shadow-xl border border-slate-600">
-                  {reactionTypes.map(({ type, emoji, label }) => (
-                    <button
-                      key={type}
-                      onClick={() => handleReact(type)}
-                      className="w-8 h-8 rounded-lg hover:bg-slate-600 flex items-center justify-center transition-colors"
-                      title={label}
-                    >
-                      <span className="text-lg">{emoji}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
+          {/* Channel Badge - Top Right */}
+          {isChannel && (
+            <div className="absolute top-3 right-3 bg-black/70 rounded-full w-8 h-8 flex items-center justify-center">
+              <span className="text-white text-xs font-bold">24</span>
             </div>
-
-            {/* Comment Button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onComment && onComment(post.id)}
-              className="text-gray-400 hover:text-white hover:bg-slate-700"
-            >
-              <MessageCircle className="w-4 h-4 mr-1" />
-              <span className="text-sm">
-                {post.comments_count || 0} Comments
-              </span>
-            </Button>
-
-            {/* Share Button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onShare && onShare(post.id)}
-              className="text-gray-400 hover:text-white hover:bg-slate-700"
-            >
-              <Share className="w-4 h-4 mr-1" />
-              <span className="text-sm">Share</span>
-            </Button>
-          </div>
-
-          {/* Download Button for Media */}
-          {post.media && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-gray-400 hover:text-white hover:bg-slate-700"
-            >
-              <Download className="w-4 h-4" />
-            </Button>
           )}
         </div>
+      )}
+
+      {/* Text Content Area - White Background */}
+      <div className="bg-white p-4 relative">
+        {/* Main Text Content */}
+        {post.text && (
+          <div className="text-gray-800 text-sm leading-relaxed mb-3">
+            {post.text}
+          </div>
+        )}
+
+        {/* Additional Message */}
+        <div className="text-gray-600 text-sm mb-4 leading-relaxed">
+          Спасибо, что выбрали Exchange 24 💛
+          <br />
+          <br />
+          Ваш честный отзыв поможет стать нам лучше:
+          <br />
+          <a href="#" className="text-blue-600 underline">https://ex24.pro/qr/reviews</a>
+          <br />
+          Это займет не больше двух минут.
+          <div className="text-xs text-gray-500 mt-2">12:45</div>
+        </div>
+
+        {/* Channel Logo - Bottom Left */}
+        <div className="absolute -bottom-6 left-4">
+          <Avatar className="w-12 h-12 border-4 border-white shadow-lg">
+            <AvatarImage src={post.author_avatar} />
+            <AvatarFallback className="bg-yellow-500 text-white font-bold">
+              24
+            </AvatarFallback>
+          </Avatar>
+        </div>
       </div>
+
+      {/* Action Button */}
+      <div className="px-4 pb-4 mt-4">
+        <Button 
+          className="w-full bg-green-500 hover:bg-green-600 text-white rounded-lg py-2"
+          onClick={() => onComment && onComment(post.id)}
+        >
+          ⭐ Оставить отзыв
+        </Button>
+      </div>
+
+      {/* Reactions (if any) */}
+      <MessageReactions 
+        reactions={post.reactions}
+        onReact={handleReact}
+        currentUserId={currentUser?.id}
+      />
+
+      {/* Reaction Picker */}
+      {showReactionPicker && (
+        <div className="absolute bottom-16 left-4 bg-white rounded-lg p-2 flex space-x-1 z-10 shadow-xl border border-gray-200">
+          {reactionTypes.map(({ type, emoji, label }) => (
+            <button
+              key={type}
+              onClick={() => handleReact(type)}
+              className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center transition-colors"
+              title={label}
+            >
+              <span className="text-lg">{emoji}</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
