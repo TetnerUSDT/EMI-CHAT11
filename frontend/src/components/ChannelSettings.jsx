@@ -137,28 +137,38 @@ const ChannelSettings = ({ channel, currentUser, isOpen, onClose, onUpdateChanne
       reader.onload = async (e) => {
         const base64 = e.target.result;
         
-        const updatedChannel = {
-          ...channel,
-          avatar: base64
-        };
+        try {
+          // Вызываем API для обновления аватара
+          const updatedChannel = await chatAPI.updateChat(channel.id, {
+            avatar: base64
+          });
 
-        if (onUpdateChannel) {
-          await onUpdateChannel(updatedChannel);
+          // Уведомляем родительский компонент об обновлении
+          if (onUpdateChannel) {
+            await onUpdateChannel(updatedChannel);
+          }
+
+          toast({
+            title: "Avatar Updated",
+            description: "Channel avatar has been updated successfully.",
+          });
+        } catch (apiError) {
+          console.error('Error updating avatar via API:', apiError);
+          toast({
+            title: "Upload Failed",
+            description: apiError.response?.data?.detail || "Failed to upload avatar. Please try again.",
+            variant: "destructive"
+          });
         }
-
-        toast({
-          title: "Avatar Updated",
-          description: "Channel avatar has been updated successfully.",
-        });
         
         setIsUploading(false);
       };
       reader.readAsDataURL(file);
     } catch (error) {
-      console.error('Error uploading avatar:', error);
+      console.error('Error reading file:', error);
       toast({
         title: "Upload Failed",
-        description: "Failed to upload avatar. Please try again.",
+        description: "Failed to read the file. Please try again.",
         variant: "destructive"
       });
       setIsUploading(false);
