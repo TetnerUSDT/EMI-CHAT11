@@ -236,6 +236,34 @@ const ChannelSettings = ({ channel, currentUser, isOpen, onClose, onUpdateChanne
     });
   };
 
+  const handleBackgroundChange = async (newBackgroundStyle) => {
+    try {
+      // Вызываем API для обновления фона
+      await chatAPI.updateChannelBackground(channel.id, newBackgroundStyle);
+      
+      setBackgroundStyle(newBackgroundStyle);
+
+      // Уведомляем родительский компонент об обновлении
+      if (onUpdateChannel) {
+        const updatedChannel = { ...channel, background_style: newBackgroundStyle };
+        await onUpdateChannel(updatedChannel);
+      }
+
+      toast({
+        title: "Background Updated",
+        description: "Channel background has been changed successfully.",
+      });
+
+    } catch (error) {
+      console.error('Error updating background:', error);
+      toast({
+        title: "Update Failed",
+        description: error.response?.data?.detail || "Failed to update channel background. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString();
   };
