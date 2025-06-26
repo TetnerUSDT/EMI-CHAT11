@@ -26,7 +26,7 @@ import VoiceRecorder from './VoiceRecorder';
 import FileUploader from './FileUploader';
 import ChannelPost from './ChannelPost';
 import PostCreator from './PostCreator';
-import { chatAPI, userAPI } from '../services/api';
+import { chatAPI, userAPI, postAPI } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 import { useLanguage } from '../contexts/LanguageContext';
 
