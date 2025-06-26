@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import { useLanguage } from '../contexts/LanguageContext';
+import { chatAPI } from '../services/api';
 
 const ChannelSettings = ({ channel, currentUser, isOpen, onClose, onUpdateChannel }) => {
   const [activeTab, setActiveTab] = useState('general');
