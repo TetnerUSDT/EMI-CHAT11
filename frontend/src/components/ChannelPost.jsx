@@ -180,15 +180,7 @@ const ChannelPost = ({
         </div>
       </div>
 
-      {/* Action Button */}
-      <div className="px-4 pb-4 mt-4">
-        <Button 
-          className="w-full bg-green-500 hover:bg-green-600 text-white rounded-lg py-2"
-          onClick={() => onComment && onComment(post.id)}
-        >
-          ⭐ Оставить отзыв
-        </Button>
-      </div>
+
 
       {/* Reactions (if any) */}
       <MessageReactions 
