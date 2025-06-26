@@ -267,6 +267,13 @@ const AppsList = ({
           })
         )}
       </div>
+
+      {/* Store Modal */}
+      <StoreModal
+        isOpen={showStoreModal}
+        onClose={() => setShowStoreModal(false)}
+        onInstallApp={onAppInstalled}
+      />
     </div>
   );
 };
