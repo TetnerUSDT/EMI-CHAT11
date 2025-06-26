@@ -146,22 +146,22 @@ const ChannelPost = ({
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center space-x-3">
           <Avatar className="w-10 h-10">
-            <AvatarImage src={post.author?.avatar} />
+            <AvatarImage src={post.author_avatar} />
             <AvatarFallback className="bg-emerald-600 text-white">
-              {post.author?.name?.charAt(0) || post.channel?.name?.charAt(0) || 'C'}
+              {post.author_name?.charAt(0) || post.channel_name?.charAt(0) || 'C'}
             </AvatarFallback>
           </Avatar>
           <div>
             <div className="flex items-center space-x-2">
               <h4 className="font-semibold text-white">
-                {post.channel?.name || post.author?.name}
+                {post.channel_name || post.author_name}
               </h4>
-              {post.channel?.is_verified && (
+              {isChannel && (
                 <Badge className="bg-blue-500/20 text-blue-400 text-xs">✓</Badge>
               )}
             </div>
             <div className="flex items-center space-x-2 text-xs text-gray-400">
-              <span>{formatTime(post.timestamp)}</span>
+              <span>{formatTime(post.created_at)}</span>
               {isChannel && (
                 <>
                   <span>•</span>
@@ -189,9 +189,9 @@ const ChannelPost = ({
         )}
 
         {/* Media Content */}
-        {post.media && (
+        {post.media_url && (
           <MediaContent 
-            media={post.media} 
+            media={post.media_url} 
             isVideo={post.media_type === 'video'} 
           />
         )}
