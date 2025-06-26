@@ -33,16 +33,22 @@ import { useLanguage } from '../contexts/LanguageContext';
 const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
+  const [posts, setPosts] = useState([]);
   const [showStickers, setShowStickers] = useState(false);
   const [otherUser, setOtherUser] = useState(null);
   const [isLoadingUser, setIsLoadingUser] = useState(false);
   const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
   const [showFileUploader, setShowFileUploader] = useState(false);
+  const [showPostCreator, setShowPostCreator] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const { toast } = useToast();
   const { t } = useLanguage();
+
+  const isChannel = chat?.chat_type === 'channel';
+  const isChannelOwner = isChannel && chat?.owner_id === currentUser?.id;
+  const canPost = isChannel ? (isChannelOwner || chat?.allow_all_messages) : true;
 
   useEffect(() => {
     if (chat?.id) {
