@@ -68,6 +68,10 @@ api_router.include_router(chat_router)
 user_router = create_user_router(db)
 api_router.include_router(user_router)
 
+# Include post routes
+post_router = create_post_router(db)
+api_router.include_router(post_router)
+
 # Include the router in the main app
 app.include_router(api_router)
 
