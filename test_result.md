@@ -192,17 +192,17 @@ backend:
         agent: "main"
         comment: "Добавлены зависимости web3, eth-account, tronpy для работы с блокчейнами. Зависимости успешно установлены, сервер перезапущен."
 
-  - task: "Fix Channel News Display Layout"
+  - task: "Remove Phone and Video Icons from Channel Header"
     implemented: true
     working: "NA"
-    file: "/app/frontend/src/components/ChannelPost.jsx"
+    file: "/app/frontend/src/components/ChatWindow.jsx"
     stuck_count: 0
-    priority: "high"
+    priority: "medium"
     needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Исправлено отображение новостей в каналах: 1) Убрано центрирование (mx-auto), теперь новости позиционируются слева, 2) Аватар канала вынесен из блока новости и размещен снизу слева с отступом (-bottom-2 -left-2), 3) Изображения теперь сохраняют пропорции (object-contain, max-w-full h-auto) вместо растягивания на 100% ширины, 4) Ширина блока новости определяется содержимым (inline-block max-w-md). ОКОНЧАТЕЛЬНЫЕ ИСПРАВЛЕНИЯ: 5) Убраны все отступы у картинки (margin: 0, padding: 0), 6) Картинка занимает 100% ширины блока (w-full h-auto block), 7) Адаптивные размеры блока: минимум 250px, максимум 350px на десктопе, 8) Добавлено округление верхних углов картинки (rounded-t-lg), 9) Убрано overflow-hidden проблемы с отступами."
+        comment: "Удалены иконки телефона (Phone) и видео (Video) из заголовка активного канала. Убраны импорты Phone и Video из lucide-react. Удалены соответствующие кнопки из заголовка ChatWindow. Теперь в заголовке остались только кнопки: поиск, настройки/меню."
 
 frontend:
   - task: "Create EMI Logo Component"
