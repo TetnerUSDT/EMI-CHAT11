@@ -85,9 +85,10 @@ const MediaContent = ({ media, isVideo = false }) => {
       <div className="relative block">
         <video 
           src={media}
-          className="w-full h-auto block"
+          className="w-full h-auto block rounded-t-lg"
           controls
           poster="/api/placeholder/400/300"
+          style={{ margin: 0, padding: 0 }}
         />
         <div className="absolute top-2 right-2 bg-black/60 rounded-lg px-2 py-1">
           <span className="text-white text-xs">00:17</span>
@@ -101,7 +102,7 @@ const MediaContent = ({ media, isVideo = false }) => {
       <img 
         src={media} 
         alt="Posted content"
-        className="w-full h-auto block"
+        className="w-full h-auto block rounded-t-lg"
         style={{ margin: 0, padding: 0 }}
       />
     </div>
