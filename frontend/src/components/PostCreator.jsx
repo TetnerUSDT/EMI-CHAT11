@@ -143,29 +143,14 @@ const PostCreator = ({
 
     setIsPosting(true);
     try {
-      const newPost = {
-        id: `post_${Date.now()}`,
-        channel: {
-          id: channel.id,
-          name: channel.name,
-          is_verified: channel.is_verified || false
-        },
-        author: {
-          id: currentUser.id,
-          name: currentUser.name,
-          avatar: currentUser.avatar
-        },
+      const postData = {
         text: text.trim(),
         media: media,
-        media_type: mediaType,
-        timestamp: new Date().toISOString(),
-        reactions: {},
-        comments_count: 0,
-        views: Math.floor(Math.random() * 1000) + 50 // Mock view count
+        media_type: mediaType
       };
 
       if (onCreatePost) {
-        await onCreatePost(newPost);
+        await onCreatePost(postData);
       }
 
       toast({
