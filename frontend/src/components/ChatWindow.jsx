@@ -20,7 +20,8 @@ import {
   Shield,
   Star,
   UserPlus,
-  X
+  X,
+  Mic
 } from 'lucide-react';
 import StickerPicker from './StickerPicker';
 import VoiceRecorder from './VoiceRecorder';
