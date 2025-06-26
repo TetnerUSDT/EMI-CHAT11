@@ -176,7 +176,7 @@ def create_post_router(db: AsyncIOMotorDatabase) -> APIRouter:
     async def add_reaction(
         post_id: str,
         reaction_data: ReactionCreate,
-        current_user: UserInDB = Depends(get_current_user)
+        current_user: User = Depends(get_current_user)
     ):
         """Add or remove reaction to a post"""
         try:
