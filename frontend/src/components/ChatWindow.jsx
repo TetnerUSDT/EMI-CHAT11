@@ -4,22 +4,23 @@ import { Input } from './ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Badge } from './ui/badge';
 import { 
-  Send, 
-  Paperclip, 
-  Smile, 
-  Phone, 
-  Video, 
-  MoreVertical,
-  Mic,
-  MicOff,
-  MessageCircle,
-  Play,
-  Pause,
-  ArrowLeft,
-  Search,
+  ArrowLeft, 
+  Search, 
+  MoreVertical, 
   Plus,
+  Hash,
+  Users,
+  MessageCircle,
+  Paperclip,
+  Smile,
+  Send,
+  Eye,
   Settings,
-  Hash
+  Crown,
+  Shield,
+  Star,
+  UserPlus,
+  X
 } from 'lucide-react';
 import StickerPicker from './StickerPicker';
 import VoiceRecorder from './VoiceRecorder';
