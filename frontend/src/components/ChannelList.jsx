@@ -161,11 +161,14 @@ const ChannelList = ({
   searchQuery, 
   onSearchChange, 
   onChannelCreated,
+  onUpdateChannel,
   isLoading,
   currentUser 
 }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [showChannelSettings, setShowChannelSettings] = useState(false);
+  const [settingsChannel, setSettingsChannel] = useState(null);
   const { toast } = useToast();
   const { t } = useLanguage();
 
