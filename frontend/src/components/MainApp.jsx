@@ -185,6 +185,7 @@ const MainApp = ({ user, onLogout, onUserUpdate }) => {
                 selectedChannel={selectedChat}
                 onSelectChannel={handleSelectChat}
                 onChannelCreated={handleChatCreated}
+                onUpdateChannel={handleChatCreated}
                 isLoading={isLoading}
                 currentUser={currentUser}
                 searchQuery={searchQuery}
