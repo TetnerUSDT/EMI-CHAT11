@@ -6,6 +6,7 @@ import { Button } from './ui/button';
 import { Search, Star, Download, Pin, ExternalLink, Users, Clock, Heart } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import { useLanguage } from '../contexts/LanguageContext';
+import StoreModal from './StoreModal';
 
 const AppsList = ({ 
   apps, 
@@ -18,6 +19,7 @@ const AppsList = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [pinnedApps, setPinnedApps] = useState([]);
+  const [showStoreModal, setShowStoreModal] = useState(false);
   const { toast } = useToast();
   const { t } = useLanguage();
 
