@@ -482,78 +482,98 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
         </div>
       </div>
 
-      {/* Messages */}
+      {/* Messages/Posts */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {isLoading ? (
           <div className="flex justify-center items-center h-full">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400"></div>
           </div>
-        ) : messages.length === 0 ? (
-          <div className="flex justify-center items-center h-full text-gray-400">
-            <div className="text-center">
-              <MessageCircle className="w-16 h-16 mx-auto mb-2 opacity-50" />
-              <p>No messages yet</p>
-              <p className="text-sm">Start the conversation!</p>
+        ) : isChannel ? (
+          /* Channel Posts */
+          posts.length === 0 ? (
+            <div className="flex justify-center items-center h-full text-gray-400">
+              <div className="text-center">
+                <Hash className="w-16 h-16 mx-auto mb-2 opacity-50" />
+                <p>No posts yet</p>
+                <p className="text-sm">
+                  {canPost ? 'Create the first post!' : 'Admin will post content soon'}
+                </p>
+              </div>
             </div>
-          </div>
+          ) : (
+            posts.map((post) => (
+              <ChannelPost
+                key={post.id}
+                post={post}
+                currentUser={currentUser}
+                onReact={handleReactToPost}
+                onComment={handleCommentOnPost}
+                onShare={handleSharePost}
+                isChannel={true}
+              />
+            ))
+          )
         ) : (
-          messages.map((msg) => {
-            const isSentByMe = msg.sender_id === currentUser.id;
-            
-            return (
-              <div
-                key={msg.id}
-                className={`flex ${isSentByMe ? 'justify-end' : 'justify-start'}`}
-              >
-                <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-                  isSentByMe 
-                    ? 'bg-emerald-600 text-white' 
-                    : 'bg-slate-700 text-white'
-                }`}>
-                  {msg.message_type === 'sticker' && msg.sticker_url && (
-                    <div className="text-center">
-                      <span className="text-3xl">{msg.sticker_url}</span>
-                    </div>
-                  )}
-                  
-                  {msg.message_type === 'voice' && (
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-white hover:bg-white/20"
-                      >
-                        <Play size={16} />
-                      </Button>
-                      <div className="flex-1">
-                        <div className="bg-white/20 h-1 rounded-full">
-                          <div className="bg-white h-1 rounded-full w-1/3"></div>
-                        </div>
-                      </div>
-                      <span className="text-xs opacity-75">0:05</span>
-                    </div>
-                  )}
-                  
-                  {msg.message_type === 'file' && (
-                    <div className="flex items-center space-x-2">
-                      <Paperclip size={16} />
-                      <span className="text-sm">{msg.file_name}</span>
-                    </div>
-                  )}
-                  
-                  {msg.message_type === 'text' && (
-                    <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                  )}
-                  
-                  <div className={`text-xs mt-1 ${
-                    isSentByMe ? 'text-emerald-200' : 'text-gray-400'
+          /* Regular Messages */
+          messages.length === 0 ? (
+            <div className="flex justify-center items-center h-full text-gray-400">
+              <div className="text-center">
+                <MessageCircle className="w-16 h-16 mx-auto mb-2 opacity-50" />
+                <p>No messages yet</p>
+                <p className="text-sm">Start the conversation!</p>
+              </div>
+            </div>
+          ) : (
+            messages.map((msg) => {
+              const isSentByMe = msg.sender_id === currentUser.id;
+              
+              return (
+                <div
+                  key={msg.id}
+                  className={`flex ${isSentByMe ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+                    isSentByMe 
+                      ? 'bg-emerald-600 text-white' 
+                      : 'bg-slate-700 text-white'
                   }`}>
-                    {formatTime(msg.timestamp)}
+                    {msg.message_type === 'sticker' && msg.sticker_url && (
+                      <div className="text-center">
+                        <span className="text-3xl">{msg.sticker_url}</span>
+                      </div>
+                    )}
+                    
+                    {msg.message_type === 'voice' && (
+                      <div className="flex items-center space-x-2">
+                        <Button size="sm" variant="ghost" className="p-1 text-current">
+                          <Play className="w-4 h-4" />
+                        </Button>
+                        <div className="flex-1 h-1 bg-white/20 rounded-full">
+                          <div className="h-full w-1/3 bg-white rounded-full"></div>
+                        </div>
+                        <span className="text-xs">0:15</span>
+                      </div>
+                    )}
+                    
+                    {msg.message_type === 'file' && (
+                      <div className="flex items-center space-x-2">
+                        <Paperclip className="w-4 h-4" />
+                        <span className="text-sm">{msg.content}</span>
+                      </div>
+                    )}
+                    
+                    {(!msg.message_type || msg.message_type === 'text') && (
+                      <p className="text-sm">{msg.content}</p>
+                    )}
+                    
+                    <p className="text-xs opacity-70 mt-1">
+                      {formatTime(msg.timestamp)}
+                    </p>
                   </div>
                 </div>
-              </div>
-            );
-          })
+              );
+            })
+          )
         )}
         <div ref={messagesEndRef} />
       </div>
