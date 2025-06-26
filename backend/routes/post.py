@@ -38,7 +38,7 @@ def create_post_router(db: AsyncIOMotorDatabase) -> APIRouter:
                 )
             
             # Check if user is admin or owner of the channel
-            user_id = str(current_user.id)
+            user_id = current_user["id"]
             is_owner = channel.get("owner_id") == user_id
             is_admin = user_id in channel.get("admins", [])
             
