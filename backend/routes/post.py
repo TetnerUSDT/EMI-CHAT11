@@ -245,7 +245,7 @@ def create_post_router(db: AsyncIOMotorDatabase) -> APIRouter:
     @router.delete("/{post_id}")
     async def delete_post(
         post_id: str,
-        current_user: UserInDB = Depends(get_current_user)
+        current_user: User = Depends(get_current_user)
     ):
         """Delete a post (admin only)"""
         try:
