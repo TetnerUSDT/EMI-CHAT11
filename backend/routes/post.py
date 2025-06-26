@@ -18,7 +18,7 @@ def create_post_router(db: AsyncIOMotorDatabase) -> APIRouter:
     async def create_post(
         channel_id: str,
         post_data: PostCreate,
-        current_user: User = Depends(get_current_user)
+        current_user: dict = Depends(get_current_user)
     ):
         """Create a new post in a channel (admin only)"""
         try:
