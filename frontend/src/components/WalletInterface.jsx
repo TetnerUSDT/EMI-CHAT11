@@ -232,7 +232,7 @@ const WalletInterface = ({ user, onBackToMenu }) => {
             />
           </div>
           {!selectedNetwork ? (
-            {/* When no network selected - show single placeholder */}
+            /* When no network selected - show single placeholder */
             <div className="flex-1 h-full flex items-center justify-center bg-slate-800/50">
               <div className="text-center text-gray-400">
                 <Wallet className="w-16 h-16 mx-auto mb-4 opacity-50" />
