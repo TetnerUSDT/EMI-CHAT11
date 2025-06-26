@@ -143,4 +143,34 @@ export const userAPI = {
   }
 };
 
+export const postAPI = {
+  // Create a post in a channel
+  createPost: async (channelId, postData) => {
+    const response = await api.post(`/posts/${channelId}`, postData);
+    return response.data;
+  },
+
+  // Get posts from a channel
+  getChannelPosts: async (channelId, page = 1, limit = 20) => {
+    const response = await api.get(`/posts/${channelId}`, {
+      params: { page, limit }
+    });
+    return response.data;
+  },
+
+  // Add reaction to a post
+  addReaction: async (postId, reactionType) => {
+    const response = await api.post(`/posts/${postId}/reactions`, {
+      reaction_type: reactionType
+    });
+    return response.data;
+  },
+
+  // Delete a post
+  deletePost: async (postId) => {
+    const response = await api.delete(`/posts/${postId}`);
+    return response.data;
+  }
+};
+
 export default api;
