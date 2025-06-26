@@ -124,6 +124,12 @@ export const chatAPI = {
   updateChat: async (chatId, updateData) => {
     const response = await api.put(`/chats/${chatId}`, updateData);
     return response.data;
+  },
+
+  // Update channel background
+  updateChannelBackground: async (chatId, backgroundStyle) => {
+    const response = await api.patch(`/chats/${chatId}/background?background_style=${backgroundStyle}`);
+    return response.data;
   }
 };
 
