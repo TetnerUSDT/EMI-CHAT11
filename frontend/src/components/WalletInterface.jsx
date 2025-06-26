@@ -231,7 +231,7 @@ const WalletInterface = ({ user, onBackToMenu }) => {
           
           <div className="flex-1 flex">
             {/* Wallet List */}
-            <div className="h-full w-80">
+            <div className="h-full w-96">
               <WalletList 
                 network={selectedNetwork}
                 wallets={getCurrentWallets()}
