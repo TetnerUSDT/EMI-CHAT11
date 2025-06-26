@@ -578,6 +578,7 @@ def create_chat_router(db: AsyncIOMotorDatabase) -> APIRouter:
                 created_by=updated_chat.get("created_by"),
                 owner_id=updated_chat.get("owner_id"),
                 allow_all_messages=updated_chat.get("allow_all_messages", False),
+                background_style=updated_chat.get("background_style", "default"),
                 created_at=updated_chat.get("created_at")
             )
             
