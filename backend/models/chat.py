@@ -52,6 +52,8 @@ class Chat(BaseModel):
     last_message_id: Optional[str] = None
     last_message_time: Optional[datetime] = None
     created_by: str
+    owner_id: Optional[str] = None  # for channels - who owns the channel
+    allow_all_messages: bool = Field(default=False)  # for channels - if all subscribers can send messages
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     
