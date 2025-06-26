@@ -164,7 +164,7 @@ const ChannelPost = ({
       </div>
       
       {/* News Content - Right of avatar, width adapts to image */}
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden" style={{ minWidth: '250px', maxWidth: '400px' }}>
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-sm lg:max-w-sm" style={{ minWidth: '250px', maxWidth: '350px' }}>
         {/* Media Content - Top */}
         {post.media_url && (
           <div className="relative">
