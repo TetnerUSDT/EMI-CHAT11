@@ -167,18 +167,7 @@ const ChannelPost = ({
           </div>
         )}
 
-        {/* Additional Message */}
-        <div className="text-gray-600 text-sm mb-4 leading-relaxed">
-          Спасибо, что выбрали Exchange 24 💛
-          <br />
-          <br />
-          Ваш честный отзыв поможет стать нам лучше:
-          <br />
-          <a href="#" className="text-blue-600 underline">https://ex24.pro/qr/reviews</a>
-          <br />
-          Это займет не больше двух минут.
-          <div className="text-xs text-gray-500 mt-2">12:45</div>
-        </div>
+
 
         {/* Channel Logo - Bottom Left */}
         <div className="absolute -bottom-6 left-4">
