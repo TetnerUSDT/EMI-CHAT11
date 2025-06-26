@@ -446,6 +446,19 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
           </div>
           
           <div className="flex space-x-1">
+            {/* Create Post button for channels */}
+            {isChannel && canPost && (
+              <Button 
+                size="sm" 
+                variant="ghost" 
+                className="text-gray-400 hover:text-white p-2"
+                onClick={() => setShowPostCreator(true)}
+                title="Create Post"
+              >
+                <Plus className="w-5 h-5" />
+              </Button>
+            )}
+            
             {/* Search messages button */}
             <Button size="sm" variant="ghost" className="text-gray-400 hover:text-white p-2">
               <Search className="w-4 h-4" />
