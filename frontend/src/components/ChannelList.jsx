@@ -4,10 +4,11 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { Search, Plus, Hash, Users, Eye, Lock } from 'lucide-react';
+import { Search, Plus, Hash, Users, Eye, Lock, Settings } from 'lucide-react';
 import { chatAPI } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 import { useLanguage } from '../contexts/LanguageContext';
+import ChannelSettings from './ChannelSettings';
 
 const ChannelCreator = ({ onChannelCreated }) => {
   const [channelName, setChannelName] = useState('');
