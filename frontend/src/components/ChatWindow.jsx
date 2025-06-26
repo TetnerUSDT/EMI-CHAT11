@@ -52,14 +52,73 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
 
   useEffect(() => {
     if (chat?.id) {
-      loadMessages();
-      loadOtherUser();
+      if (isChannel) {
+        loadChannelPosts();
+      } else {
+        loadMessages();
+        loadOtherUser();
+      }
     }
-  }, [chat?.id]);
+  }, [chat?.id, isChannel]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, posts]);
+
+  // Mock channel posts data
+  const mockChannelPosts = [
+    {
+      id: 'post1',
+      channel: {
+        id: chat?.id,
+        name: chat?.name,
+        is_verified: true
+      },
+      author: {
+        id: currentUser?.id,
+        name: currentUser?.name,
+        avatar: currentUser?.avatar
+      },
+      text: 'В Японии в городе Хаконэ на острове Хонсю нашли винные ванны со спа.',
+      media: '/api/placeholder/400/300',
+      media_type: 'image',
+      timestamp: '2024-06-12T10:17:00Z',
+      reactions: {
+        like: ['user1', 'user2'],
+        love: ['user3']
+      },
+      comments_count: 2,
+      views: 3960
+    },
+    {
+      id: 'post2',
+      channel: {
+        id: chat?.id,
+        name: chat?.name,
+        is_verified: true
+      },
+      author: {
+        id: currentUser?.id,
+        name: currentUser?.name,
+        avatar: currentUser?.avatar
+      },
+      text: '🤔 Пентагон в честь Дня американского флага опубликовал поздравление с российским триколором.',
+      media: '/api/placeholder/400/400',
+      media_type: 'image',
+      timestamp: '2024-06-15T08:30:00Z',
+      reactions: {
+        like: ['user1', 'user2', 'user3', 'user4', 'user5'],
+        laugh: ['user6', 'user7', 'user8']
+      },
+      comments_count: 6,
+      views: 3507
+    }
+  ];
+
+  const loadChannelPosts = () => {
+    // Mock loading channel posts
+    setPosts(mockChannelPosts);
+  };
 
   const loadOtherUser = async () => {
     if (!chat || chat.chat_type !== 'personal') return;
