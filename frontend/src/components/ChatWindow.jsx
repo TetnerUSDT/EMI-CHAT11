@@ -430,8 +430,8 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
             
             <Avatar className="w-10 h-10">
               <AvatarImage src={displayInfo.avatar} />
-              <AvatarFallback className="bg-emerald-600 text-white">
-                {displayInfo.name.charAt(0).toUpperCase()}
+              <AvatarFallback className={`text-white ${isChannel ? 'bg-blue-600' : 'bg-emerald-600'}`}>
+                {isChannel ? <Hash className="w-6 h-6" /> : displayInfo.name.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div>
