@@ -289,7 +289,7 @@ const ChannelPost = ({
         {post.reactions && Object.keys(post.reactions).length > 0 && (
           <div className="absolute bottom-2 left-4 bg-white/90 rounded-full px-2 py-1 shadow-sm border border-gray-200">
             <div className="flex items-center space-x-1">
-              {Object.entries(post.reactions).slice(0, 5).map(([type, users]) => {
+              {Object.entries(post.reactions).map(([type, users]) => {
                 const userHasThisReaction = users.includes(currentUser?.id);
                 return (
                   users.length > 0 && (
@@ -311,9 +311,6 @@ const ChannelPost = ({
                   )
                 );
               })}
-              {Object.keys(post.reactions).length > 5 && (
-                <span className="text-xs text-gray-500">+{Object.keys(post.reactions).length - 5}</span>
-              )}
             </div>
           </div>
         )}
