@@ -156,7 +156,15 @@ const ChannelPost = ({
   };
 
   return (
-    <div className="mb-6 flex items-start justify-start">
+    <div 
+      className="mb-6 flex items-start justify-start relative"
+      onMouseEnter={() => setShowReactionTooltip(true)}
+      onMouseLeave={() => {
+        if (!showReactionPicker) {
+          setShowReactionTooltip(false);
+        }
+      }}
+    >
       {/* Channel Avatar - Left side with 10px margin */}
       <div className="flex-shrink-0 mr-2.5">
         <Avatar className="w-12 h-12 border-4 border-white shadow-lg">
@@ -189,38 +197,75 @@ const ChannelPost = ({
         <div className="bg-white p-4">
           {/* Main Text Content - Aligned left */}
           {post.text && (
-            <div className="text-gray-800 text-sm leading-relaxed mb-3 text-left">
+            <div className="text-gray-800 text-sm leading-relaxed text-left">
               {post.text}
             </div>
           )}
+          
+          {/* Time stamp - Small gray text like Telegram */}
+          <div className="text-xs text-gray-500 mt-2 text-left">
+            {formatTime(post.created_at)}
+          </div>
         </div>
+      </div>
 
-        {/* Reactions (if any) */}
-        <div className="px-4 pb-4">
-          <MessageReactions 
-            reactions={post.reactions}
-            onReact={handleReact}
-            currentUserId={currentUser?.id}
-            onToggleReactionPicker={() => setShowReactionPicker(!showReactionPicker)}
-          />
+      {/* Reaction Tooltip - appears on hover */}
+      {showReactionTooltip && (
+        <div 
+          className="absolute top-2 right-2 bg-white rounded-full shadow-lg border border-gray-200 p-2 z-20"
+          onMouseEnter={() => setShowReactionPicker(true)}
+          onMouseLeave={() => {
+            setShowReactionPicker(false);
+            setShowReactionTooltip(false);
+          }}
+        >
+          <Heart className="w-5 h-5 text-gray-600 hover:text-red-500 transition-colors cursor-pointer" />
         </div>
+      )}
 
-        {/* Reaction Picker */}
-        {showReactionPicker && (
-          <div className="absolute bottom-16 left-4 bg-white rounded-lg p-2 flex space-x-1 z-10 shadow-xl border border-gray-200">
+      {/* Telegram-style Reaction Picker with horizontal scroll */}
+      {showReactionPicker && (
+        <div 
+          className="absolute top-12 right-2 bg-white rounded-full shadow-xl border border-gray-200 p-2 z-30"
+          style={{ minWidth: '200px' }}
+          onMouseEnter={() => setShowReactionPicker(true)}
+          onMouseLeave={() => {
+            setShowReactionPicker(false);
+            setShowReactionTooltip(false);
+          }}
+        >
+          <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
             {reactionTypes.map(({ type, emoji, label }) => (
               <button
                 key={type}
                 onClick={() => handleReact(type)}
-                className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center transition-colors"
+                className="flex-shrink-0 w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center transition-all duration-200 hover:scale-110"
                 title={label}
               >
-                <span className="text-lg">{emoji}</span>
+                <span className="text-xl">{emoji}</span>
               </button>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* Existing reactions display (if any) */}
+      {post.reactions && Object.keys(post.reactions).length > 0 && (
+        <div className="absolute bottom-2 left-16 bg-white/90 rounded-full px-2 py-1 shadow-sm border border-gray-200">
+          <div className="flex items-center space-x-1">
+            {Object.entries(post.reactions).slice(0, 3).map(([type, users]) => (
+              users.length > 0 && (
+                <div key={type} className="flex items-center">
+                  <span className="text-sm">
+                    {reactionTypes.find(r => r.type === type)?.emoji}
+                  </span>
+                  <span className="text-xs text-gray-600 ml-1">{users.length}</span>
+                </div>
+              )
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
