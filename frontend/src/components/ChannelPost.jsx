@@ -219,7 +219,7 @@ const ChannelPost = ({
         )}
 
         {/* Text Content Area - White Background */}
-        <div className="bg-white p-4">
+        <div className="bg-white px-4 pt-1.5 pb-4">
           {/* Main Text Content - Aligned left */}
           {post.text && (
             <div className="text-gray-800 text-sm leading-relaxed text-left mb-2">
@@ -228,7 +228,7 @@ const ChannelPost = ({
           )}
           
           {/* Time stamp - Small gray text like Telegram - positioned bottom right */}
-          <div className="flex justify-end">
+          <div className="flex justify-end mb-4">
             <span className="text-xs text-gray-500">
               {formatTime(post.created_at)}
             </span>
