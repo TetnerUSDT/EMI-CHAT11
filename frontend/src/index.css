@@ -93,3 +93,34 @@ code {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Safari and Chrome */
 }
+
+/* Smooth animations for reaction tooltips */
+.reaction-tooltip {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: bottom right;
+}
+
+.reaction-picker {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: bottom right;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Custom scrollbar for reaction picker */
+.reaction-picker::-webkit-scrollbar {
+  width: 2px;
+}
+
+.reaction-picker::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.reaction-picker::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 1px;
+}
+
+.reaction-picker::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
