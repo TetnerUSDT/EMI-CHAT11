@@ -165,12 +165,8 @@ const ChannelPost = ({
   return (
     <div 
       className="mb-6 flex items-start justify-start relative"
-      onMouseEnter={() => setShowReactionTooltip(true)}
-      onMouseLeave={() => {
-        if (!showReactionPicker) {
-          setShowReactionTooltip(false);
-        }
-      }}
+      onMouseEnter={handleMouseEnterPost}
+      onMouseLeave={handleMouseLeavePost}
     >
       {/* Channel Avatar - Left side with 10px margin */}
       <div className="flex-shrink-0 mr-2.5">
@@ -217,44 +213,56 @@ const ChannelPost = ({
           </div>
         </div>
 
-        {/* Reaction Icon - Bottom right corner on hover */}
-        {showReactionTooltip && (
-          <div 
-            className="absolute bottom-3 right-3 bg-white rounded-full shadow-lg border border-gray-200 p-2 z-20"
-            onMouseEnter={() => setShowReactionPicker(true)}
-            onMouseLeave={() => {
-              setShowReactionPicker(false);
-              setShowReactionTooltip(false);
-            }}
-          >
-            <Heart className="w-4 h-4 text-gray-600 hover:text-red-500 transition-colors cursor-pointer" />
-          </div>
-        )}
+        {/* Reaction Icon - Bottom right corner on hover with smooth animation */}
+        <div 
+          className={`absolute bottom-2 right-2 bg-white rounded-full shadow-lg border border-gray-200 p-1.5 z-20 transition-all duration-300 ease-in-out ${
+            showReactionTooltip ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
+          }`}
+          onMouseEnter={handleMouseEnterPicker}
+          onMouseLeave={handleMouseLeavePicker}
+        >
+          <Heart className="w-3.5 h-3.5 text-gray-600 hover:text-red-500 transition-colors cursor-pointer" />
+        </div>
 
-        {/* Vertical Reaction Picker like Telegram */}
-        {showReactionPicker && (
-          <div 
-            className="absolute bottom-12 right-3 bg-white rounded-lg shadow-xl border border-gray-200 p-2 z-30"
-            onMouseEnter={() => setShowReactionPicker(true)}
-            onMouseLeave={() => {
-              setShowReactionPicker(false);
-              setShowReactionTooltip(false);
-            }}
-          >
-            <div className="flex flex-col space-y-1">
-              {reactionTypes.map(({ type, emoji, label }) => (
+        {/* Vertical Reaction Picker with scroll and adaptive positioning */}
+        <div 
+          className={`absolute bottom-10 bg-white rounded-lg shadow-xl border border-gray-200 p-1.5 z-30 transition-all duration-300 ease-in-out ${
+            showReactionPicker ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
+          }`}
+          style={{ 
+            right: '8px',
+            maxHeight: '200px',
+            width: '44px'
+          }}
+          onMouseEnter={handleMouseEnterPicker}
+          onMouseLeave={handleMouseLeavePicker}
+        >
+          <div className="flex flex-col space-y-0.5 overflow-y-auto scrollbar-hide max-h-48">
+            {reactionTypes.map(({ type, emoji, label }) => {
+              const userReactions = getUserReactions();
+              const hasReacted = userReactions.includes(type);
+              const canReact = canAddReaction(type);
+              
+              return (
                 <button
                   key={type}
                   onClick={() => handleReact(type)}
-                  className="w-10 h-10 rounded-lg hover:bg-gray-100 flex items-center justify-center transition-all duration-200 hover:scale-110"
-                  title={label}
+                  disabled={!canReact}
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
+                    hasReacted 
+                      ? 'bg-blue-100 hover:bg-blue-200 scale-110' 
+                      : canReact 
+                        ? 'hover:bg-gray-100 hover:scale-110' 
+                        : 'opacity-50 cursor-not-allowed'
+                  }`}
+                  title={`${label} ${hasReacted ? '(Remove)' : userReactions.length >= 3 ? '(Max 3 reactions)' : '(Add)'}`}
                 >
-                  <span className="text-xl">{emoji}</span>
+                  <span className="text-lg">{emoji}</span>
                 </button>
-              ))}
-            </div>
+              );
+            })}
           </div>
-        )}
+        </div>
 
         {/* Existing reactions display (if any) */}
         {post.reactions && Object.keys(post.reactions).length > 0 && (
