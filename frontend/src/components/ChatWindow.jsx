@@ -217,54 +217,25 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
 
   const handleReactToPost = async (postId, reactionType, userId) => {
     try {
-      // Optimistically update UI
+      // Send to server first to get the actual result
+      const response = await postAPI.addReaction(postId, reactionType);
+      
+      // Update UI with server response
       setPosts(prevPosts => 
         prevPosts.map(post => {
           if (post.id === postId) {
-            const updatedReactions = { ...post.reactions };
-            
-            // Initialize reaction type if it doesn't exist
-            if (!updatedReactions[reactionType]) {
-              updatedReactions[reactionType] = [];
-            }
-            
-            // Remove user from all reaction types first
-            Object.keys(updatedReactions).forEach(type => {
-              updatedReactions[type] = updatedReactions[type].filter(id => id !== userId);
-            });
-            
-            // Toggle user reaction
-            if (updatedReactions[reactionType].includes(userId)) {
-              updatedReactions[reactionType] = updatedReactions[reactionType].filter(id => id !== userId);
-            } else {
-              updatedReactions[reactionType].push(userId);
-            }
-            
-            // Clean up empty reaction lists
-            Object.keys(updatedReactions).forEach(type => {
-              if (updatedReactions[type].length === 0) {
-                delete updatedReactions[type];
-              }
-            });
-            
-            return { ...post, reactions: updatedReactions };
+            return { ...post, reactions: response.reactions };
           }
           return post;
         })
       );
-
-      // Send to server
-      await postAPI.addReaction(postId, reactionType);
     } catch (error) {
       console.error('Error reacting to post:', error);
       toast({
         title: "Reaction Failed",
-        description: "Failed to add reaction. Please try again.",
+        description: error.response?.data?.detail || "Failed to add reaction. Please try again.",
         variant: "destructive"
       });
-      
-      // Revert optimistic update on error
-      loadChannelPosts();
     }
   };
 
