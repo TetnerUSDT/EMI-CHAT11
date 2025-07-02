@@ -85,7 +85,7 @@ const ChannelPost = ({
     if (!post.reactions || !currentUser?.id) return [];
     const userReactions = [];
     Object.entries(post.reactions).forEach(([type, users]) => {
-      if (users.includes(currentUser.id)) {
+      if (users && users.includes(currentUser.id)) {
         userReactions.push(type);
       }
     });
