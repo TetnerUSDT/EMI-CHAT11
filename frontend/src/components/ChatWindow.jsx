@@ -478,30 +478,32 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400"></div>
           </div>
         ) : isChannel ? (
-          /* Channel Posts */
-          posts.length === 0 ? (
-            <div className="flex justify-center items-center h-full text-gray-400">
-              <div className="text-center">
-                <Hash className="w-16 h-16 mx-auto mb-2 opacity-50" />
-                <p>No posts yet</p>
-                <p className="text-sm">
-                  {canPost ? 'Create the first post!' : 'Admin will post content soon'}
-                </p>
+          /* Channel Posts - Aligned to left */
+          <div className="flex flex-col items-start space-y-4">
+            {posts.length === 0 ? (
+              <div className="flex justify-center items-center h-full text-gray-400 w-full">
+                <div className="text-center">
+                  <Hash className="w-16 h-16 mx-auto mb-2 opacity-50" />
+                  <p>No posts yet</p>
+                  <p className="text-sm">
+                    {canPost ? 'Create the first post!' : 'Admin will post content soon'}
+                  </p>
+                </div>
               </div>
-            </div>
-          ) : (
-            posts.map((post) => (
-              <ChannelPost
-                key={post.id}
-                post={post}
-                currentUser={currentUser}
-                onReact={handleReactToPost}
-                onComment={handleCommentOnPost}
-                onShare={handleSharePost}
-                isChannel={true}
-              />
-            ))
-          )
+            ) : (
+              posts.map((post) => (
+                <ChannelPost
+                  key={post.id}
+                  post={post}
+                  currentUser={currentUser}
+                  onReact={handleReactToPost}
+                  onComment={handleCommentOnPost}
+                  onShare={handleSharePost}
+                  isChannel={true}
+                />
+              ))
+            )}
+          </div>
         ) : (
           /* Regular Messages */
           messages.length === 0 ? (
