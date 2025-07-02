@@ -264,20 +264,35 @@ const ChannelPost = ({
           </div>
         </div>
 
-        {/* Existing reactions display (if any) */}
+        {/* Existing reactions display (if any) - clickable for removal */}
         {post.reactions && Object.keys(post.reactions).length > 0 && (
           <div className="absolute bottom-2 left-4 bg-white/90 rounded-full px-2 py-1 shadow-sm border border-gray-200">
             <div className="flex items-center space-x-1">
-              {Object.entries(post.reactions).slice(0, 3).map(([type, users]) => (
-                users.length > 0 && (
-                  <div key={type} className="flex items-center">
-                    <span className="text-sm">
-                      {reactionTypes.find(r => r.type === type)?.emoji}
-                    </span>
-                    <span className="text-xs text-gray-600 ml-1">{users.length}</span>
-                  </div>
-                )
-              ))}
+              {Object.entries(post.reactions).slice(0, 5).map(([type, users]) => {
+                const userHasThisReaction = users.includes(currentUser?.id);
+                return (
+                  users.length > 0 && (
+                    <button
+                      key={type}
+                      onClick={() => handleReact(type)}
+                      className={`flex items-center space-x-1 px-1 py-0.5 rounded transition-colors ${
+                        userHasThisReaction 
+                          ? 'bg-blue-100 hover:bg-blue-200' 
+                          : 'hover:bg-gray-100'
+                      }`}
+                      title={userHasThisReaction ? 'Remove your reaction' : 'Add your reaction'}
+                    >
+                      <span className="text-sm">
+                        {reactionTypes.find(r => r.type === type)?.emoji}
+                      </span>
+                      <span className="text-xs text-gray-600 ml-1">{users.length}</span>
+                    </button>
+                  )
+                );
+              })}
+              {Object.keys(post.reactions).length > 5 && (
+                <span className="text-xs text-gray-500">+{Object.keys(post.reactions).length - 5}</span>
+              )}
             </div>
           </div>
         )}
