@@ -154,9 +154,9 @@ const ChannelPost = ({
   };
 
   return (
-    <div className="mb-6 flex items-end space-x-3">
-      {/* Channel Avatar - Left side */}
-      <div className="flex-shrink-0">
+    <div className="mb-6 flex items-start justify-start">
+      {/* Channel Avatar - Left side with 10px margin */}
+      <div className="flex-shrink-0 mr-2.5">
         <Avatar className="w-12 h-12 border-4 border-white shadow-lg">
           <AvatarImage src={post.author_avatar} />
           <AvatarFallback className="bg-yellow-500 text-white font-bold">
@@ -165,8 +165,8 @@ const ChannelPost = ({
         </Avatar>
       </div>
       
-      {/* News Content - Right of avatar, width adapts to image */}
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-sm lg:max-w-sm" style={{ minWidth: '250px', maxWidth: '350px' }}>
+      {/* News Content - Positioned left, aligned to left */}
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden" style={{ minWidth: '250px', maxWidth: '350px' }}>
         {/* Media Content - Top - No padding/margins */}
         {post.media_url && (
           <div className="relative" style={{ margin: 0, padding: 0 }}>
