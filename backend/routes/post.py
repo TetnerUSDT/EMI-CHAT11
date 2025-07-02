@@ -178,7 +178,7 @@ def create_post_router(db: AsyncIOMotorDatabase) -> APIRouter:
         reaction_data: ReactionCreate,
         current_user: dict = Depends(get_current_user)
     ):
-        """Add or remove reaction to a post"""
+        """Add or remove reaction to a post (max 3 reactions per user)"""
         try:
             # Check if post exists
             post = await db.posts.find_one({"_id": ObjectId(post_id)})
@@ -207,23 +207,32 @@ def create_post_router(db: AsyncIOMotorDatabase) -> APIRouter:
             reactions = post.get("reactions", {})
             reaction_type = reaction_data.reaction_type
             
-            # Remove user from all reaction types first
-            for r_type in reactions:
-                if user_id in reactions[r_type]:
-                    reactions[r_type].remove(user_id)
+            # Count user's current reactions
+            user_reaction_count = 0
+            user_reactions = []
+            for r_type, users in reactions.items():
+                if user_id in users:
+                    user_reaction_count += 1
+                    user_reactions.append(r_type)
             
-            # Add user to the new reaction type (if not removing)
-            if reaction_type not in reactions:
-                reactions[reaction_type] = []
-            
-            # Toggle reaction - if user already reacted with this type, remove it
-            if user_id in reactions[reaction_type]:
+            # Check if user already reacted with this type
+            if reaction_type in reactions and user_id in reactions[reaction_type]:
+                # Remove the reaction (toggle off)
                 reactions[reaction_type].remove(user_id)
+                if not reactions[reaction_type]:  # Remove empty lists
+                    del reactions[reaction_type]
             else:
+                # Check if user can add more reactions (max 3)
+                if user_reaction_count >= 3:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="Maximum 3 reactions per user allowed"
+                    )
+                
+                # Add the reaction
+                if reaction_type not in reactions:
+                    reactions[reaction_type] = []
                 reactions[reaction_type].append(user_id)
-            
-            # Clean up empty reaction lists
-            reactions = {k: v for k, v in reactions.items() if v}
             
             # Update in database
             await db.posts.update_one(
