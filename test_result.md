@@ -447,7 +447,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Fix Channel News Display Layout"
+    - "Implement Telegram-style Reactions System"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
