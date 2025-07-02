@@ -61,6 +61,7 @@ const ChannelPost = ({
   const [showReactionTooltip, setShowReactionTooltip] = useState(false);
   const [showReactionPicker, setShowReactionPicker] = useState(false);
   const [viewCount, setViewCount] = useState(post.views || 0);
+  const [hideTimeout, setHideTimeout] = useState(null);
 
   const reactionTypes = [
     { type: 'like', emoji: '👍', label: 'Like' },
@@ -68,15 +69,80 @@ const ChannelPost = ({
     { type: 'laugh', emoji: '😂', label: 'Laugh' },
     { type: 'wow', emoji: '😮', label: 'Wow' },
     { type: 'sad', emoji: '😢', label: 'Sad' },
-    { type: 'angry', emoji: '😡', label: 'Angry' }
+    { type: 'angry', emoji: '😡', label: 'Angry' },
+    { type: 'fire', emoji: '🔥', label: 'Fire' },
+    { type: 'party', emoji: '🎉', label: 'Party' },
+    { type: 'thinking', emoji: '🤔', label: 'Thinking' },
+    { type: 'clap', emoji: '👏', label: 'Clap' },
+    { type: 'heart_eyes', emoji: '😍', label: 'Heart Eyes' },
+    { type: 'thumbs_down', emoji: '👎', label: 'Thumbs Down' },
+    { type: 'shocked', emoji: '😱', label: 'Shocked' },
+    { type: 'confused', emoji: '😕', label: 'Confused' },
+    { type: 'rocket', emoji: '🚀', label: 'Rocket' }
   ];
 
+  const getUserReactions = () => {
+    if (!post.reactions || !currentUser?.id) return [];
+    const userReactions = [];
+    Object.entries(post.reactions).forEach(([type, users]) => {
+      if (users.includes(currentUser.id)) {
+        userReactions.push(type);
+      }
+    });
+    return userReactions;
+  };
+
+  const canAddReaction = (reactionType) => {
+    const userReactions = getUserReactions();
+    const hasThisReaction = userReactions.includes(reactionType);
+    return hasThisReaction || userReactions.length < 3;
+  };
+
   const handleReact = (reactionType) => {
+    if (!canAddReaction(reactionType)) {
+      return;
+    }
+
     if (onReact) {
       onReact(post.id, reactionType, currentUser.id);
     }
-    setShowReactionPicker(false);
-    setShowReactionTooltip(false);
+    
+    // Delay hiding to allow multiple reactions
+    const timeout = setTimeout(() => {
+      setShowReactionPicker(false);
+      setShowReactionTooltip(false);
+    }, 500);
+    setHideTimeout(timeout);
+  };
+
+  const handleMouseEnterPost = () => {
+    if (hideTimeout) {
+      clearTimeout(hideTimeout);
+      setHideTimeout(null);
+    }
+    setShowReactionTooltip(true);
+  };
+
+  const handleMouseLeavePost = () => {
+    if (!showReactionPicker) {
+      setShowReactionTooltip(false);
+    }
+  };
+
+  const handleMouseEnterPicker = () => {
+    if (hideTimeout) {
+      clearTimeout(hideTimeout);
+      setHideTimeout(null);
+    }
+    setShowReactionPicker(true);
+  };
+
+  const handleMouseLeavePicker = () => {
+    const timeout = setTimeout(() => {
+      setShowReactionPicker(false);
+      setShowReactionTooltip(false);
+    }, 3000); // 3 second delay
+    setHideTimeout(timeout);
   };
 
   const formatTime = (timestamp) => {
