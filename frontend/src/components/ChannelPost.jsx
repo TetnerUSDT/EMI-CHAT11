@@ -260,27 +260,26 @@ const ChannelPost = ({
           onMouseLeave={handleMouseLeavePicker}
         >
           <div className="flex flex-col space-y-0.5 overflow-y-auto scrollbar-hide max-h-48">
-            {reactionTypes.map(({ type, emoji, label }) => {
+            {getAvailableReactions().map(({ type, emoji, label }) => {
               const userReactions = getUserReactions();
               const hasReacted = userReactions.includes(type);
               const canReact = canAddReaction(type);
               
               return (
-                <button
+                <div
                   key={type}
-                  onClick={() => handleReact(type)}
-                  disabled={!canReact}
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
+                  onClick={() => canReact && handleReact(type)}
+                  className={`w-8 h-8 flex items-center justify-center cursor-pointer ${
                     hasReacted 
-                      ? 'bg-blue-100 hover:bg-blue-200 scale-110' 
+                      ? 'opacity-100' 
                       : canReact 
-                        ? 'hover:bg-gray-100 hover:scale-110' 
-                        : 'opacity-50 cursor-not-allowed'
+                        ? 'opacity-80 hover:opacity-100' 
+                        : 'opacity-30 cursor-not-allowed'
                   }`}
                   title={`${label} ${hasReacted ? '(Remove)' : userReactions.length >= 3 ? '(Max 3 reactions)' : '(Add)'}`}
                 >
                   <span className="text-lg">{emoji}</span>
-                </button>
+                </div>
               );
             })}
           </div>
