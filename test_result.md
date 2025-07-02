@@ -205,6 +205,18 @@ backend:
         comment: "Удалены иконки телефона (Phone) и видео (Video) из заголовка активного канала. Убраны импорты Phone и Video из lucide-react. Удалены соответствующие кнопки из заголовка ChatWindow. Теперь в заголовке остались только кнопки: поиск, настройки/меню. ИСПРАВЛЕНА ОШИБКА: Добавлен обратно импорт Mic, который используется для кнопки голосовых сообщений."
 
 frontend:
+  - task: "Fix Channel News Display Layout"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/ChannelPost.jsx, /app/frontend/src/components/ChatWindow.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "ИСПРАВЛЕНЫ ПРОБЛЕМЫ ОТОБРАЖЕНИЯ НОВОСТЕЙ В КАНАЛАХ: 1) Изменен контейнер постов в ChatWindow.jsx на flex flex-col items-start для левого позиционирования, 2) В ChannelPost.jsx изменен основной контейнер с items-end space-x-3 на items-start justify-start, 3) Добавлен отступ 10px (mr-2.5) между аватаром канала и контентом новости, 4) Убраны width ограничения w-full max-w-sm для правильного левого позиционирования контента. Все новости теперь отображаются слева с аватаром канала слева от новости."
+
   - task: "Create EMI Logo Component"
     implemented: true
     working: true
