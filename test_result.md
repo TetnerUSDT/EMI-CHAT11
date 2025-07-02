@@ -435,7 +435,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Remove Phone and Video Icons from Channel Header"
+    - "Fix Channel News Display Layout"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
