@@ -7,7 +7,7 @@ from datetime import datetime
 import uuid
 
 # Get the backend URL from the frontend .env file
-BACKEND_URL = "https://7e2cbe27-bf99-4f63-b743-19df2c5376c9.preview.emergentagent.com/api"
+BACKEND_URL = "https://e41f90cd-03e0-47b7-88c2-1e97f09810d8.preview.emergentagent.com/api"
 
 # Colors for terminal output
 class Colors:
