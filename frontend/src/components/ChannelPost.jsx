@@ -17,65 +17,6 @@ import {
   Download
 } from 'lucide-react';
 
-const MessageReactions = ({ reactions, onReact, currentUserId, onToggleReactionPicker }) => {
-  const reactionEmojis = {
-    like: '👍',
-    love: '❤️',
-    laugh: '😂',
-    wow: '😮',
-    sad: '😢',
-    angry: '😡'
-  };
-
-  const [showAllReactions, setShowAllReactions] = useState(false);
-
-  const getTotalReactions = () => {
-    return Object.values(reactions || {}).reduce((total, users) => total + users.length, 0);
-  };
-
-  const hasUserReacted = (reactionType) => {
-    return reactions?.[reactionType]?.includes(currentUserId);
-  };
-
-  const getTopReactions = () => {
-    const sortedReactions = Object.entries(reactions || {})
-      .filter(([type, users]) => users.length > 0)
-      .sort(([, a], [, b]) => b.length - a.length)
-      .slice(0, 3);
-    
-    return sortedReactions;
-  };
-
-  return (
-    <div className="flex items-center justify-between mt-2">
-      <div className="flex items-center space-x-2">
-        {getTotalReactions() > 0 && (
-          <div className="flex items-center space-x-1">
-            {getTopReactions().map(([type, users]) => (
-              <div key={type} className="flex items-center space-x-1">
-                <span className="text-sm">{reactionEmojis[type]}</span>
-                <span className="text-xs text-gray-400">{users.length}</span>
-              </div>
-            ))}
-            <span className="text-xs text-gray-500 ml-2">
-              {getTotalReactions()} {getTotalReactions() === 1 ? 'reaction' : 'reactions'}
-            </span>
-          </div>
-        )}
-      </div>
-      
-      {/* Add Reaction Button */}
-      <button 
-        onClick={onToggleReactionPicker}
-        className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition-colors"
-        title="Add reaction"
-      >
-        <span className="text-lg">❤️</span>
-      </button>
-    </div>
-  );
-};
-
 const MediaContent = ({ media, isVideo = false }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
