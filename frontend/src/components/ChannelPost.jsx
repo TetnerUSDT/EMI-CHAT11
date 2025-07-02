@@ -117,6 +117,7 @@ const ChannelPost = ({
   onShare,
   isChannel = true 
 }) => {
+  const [showReactionTooltip, setShowReactionTooltip] = useState(false);
   const [showReactionPicker, setShowReactionPicker] = useState(false);
   const [viewCount, setViewCount] = useState(post.views || 0);
 
@@ -134,6 +135,7 @@ const ChannelPost = ({
       onReact(post.id, reactionType, currentUser.id);
     }
     setShowReactionPicker(false);
+    setShowReactionTooltip(false);
   };
 
   const formatTime = (timestamp) => {
