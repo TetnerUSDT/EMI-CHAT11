@@ -229,6 +229,13 @@ def create_post_router(db: AsyncIOMotorDatabase) -> APIRouter:
                         detail="Maximum 3 reactions per user allowed"
                     )
                 
+                # Check if we can add a new reaction type (max 6 total types)
+                if reaction_type not in reactions and len(reactions) >= 6:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="Maximum 6 different reaction types allowed per post"
+                    )
+                
                 # Add the reaction
                 if reaction_type not in reactions:
                     reactions[reaction_type] = []
