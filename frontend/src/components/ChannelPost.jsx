@@ -92,10 +92,32 @@ const ChannelPost = ({
     return userReactions;
   };
 
+  const getAvailableReactions = () => {
+    const currentReactionTypes = Object.keys(post.reactions || {});
+    const userReactions = getUserReactions();
+    
+    // If there are already 6 different reaction types from all users,
+    // only show those 6 types + user's own reactions
+    if (currentReactionTypes.length >= 6) {
+      return reactionTypes.filter(({ type }) => 
+        currentReactionTypes.includes(type) || userReactions.includes(type)
+      );
+    }
+    
+    // Otherwise show all available reactions
+    return reactionTypes;
+  };
+
   const canAddReaction = (reactionType) => {
     const userReactions = getUserReactions();
     const hasThisReaction = userReactions.includes(reactionType);
-    return hasThisReaction || userReactions.length < 3;
+    const currentReactionTypes = Object.keys(post.reactions || {});
+    
+    // User can add if: has this reaction (for removal) OR has < 3 reactions AND (reaction type exists OR < 6 total types)
+    return hasThisReaction || (
+      userReactions.length < 3 && 
+      (currentReactionTypes.includes(reactionType) || currentReactionTypes.length < 6)
+    );
   };
 
   const handleReact = (reactionType) => {
