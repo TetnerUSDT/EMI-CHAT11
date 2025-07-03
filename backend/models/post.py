@@ -16,6 +16,7 @@ class Post(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     channel_id: str
     author_id: str
+    sequence_number: int = Field(default=0)  # Sequential number for proper pagination
     text: Optional[str] = None
     media_url: Optional[str] = None
     media_type: Optional[MediaType] = None
@@ -35,6 +36,7 @@ class PostResponse(BaseModel):
     id: str
     channel_id: str
     author_id: str
+    sequence_number: int
     author_name: Optional[str] = None
     author_avatar: Optional[str] = None
     channel_name: Optional[str] = None

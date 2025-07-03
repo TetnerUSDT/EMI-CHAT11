@@ -162,11 +162,13 @@ export const postAPI = {
     return response.data;
   },
 
-  // Get posts from a channel
-  getChannelPosts: async (channelId, page = 1, limit = 20) => {
-    const response = await api.get(`/posts/${channelId}`, {
-      params: { page, limit }
-    });
+  // Get posts from a channel with cursor-based pagination
+  getChannelPosts: async (channelId, limit = 10, beforeSequence = null) => {
+    const params = { limit };
+    if (beforeSequence) {
+      params.before_sequence = beforeSequence;
+    }
+    const response = await api.get(`/posts/${channelId}`, { params });
     return response.data;
   },
 

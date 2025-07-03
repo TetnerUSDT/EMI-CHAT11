@@ -51,10 +51,18 @@ def create_post_router(db: AsyncIOMotorDatabase) -> APIRouter:
             # Determine post type
             post_type = PostType.MEDIA if post_data.media_url else PostType.TEXT
             
+            # Get the next sequence number for this channel
+            last_post = await db.posts.find_one(
+                {"channel_id": channel_id},
+                sort=[("sequence_number", -1)]
+            )
+            next_sequence = (last_post.get("sequence_number", 0) + 1) if last_post else 1
+            
             # Create new post
             new_post = Post(
                 channel_id=channel_id,
                 author_id=user_id,
+                sequence_number=next_sequence,
                 text=post_data.text,
                 media_url=post_data.media_url,
                 media_type=post_data.media_type,
@@ -75,6 +83,7 @@ def create_post_router(db: AsyncIOMotorDatabase) -> APIRouter:
                 id=new_post.id,
                 channel_id=new_post.channel_id,
                 author_id=new_post.author_id,
+                sequence_number=new_post.sequence_number,
                 author_name=author.get("name") if author else "Unknown",
                 author_avatar=author.get("avatar") if author else None,
                 channel_name=channel.get("name"),
@@ -100,11 +109,11 @@ def create_post_router(db: AsyncIOMotorDatabase) -> APIRouter:
     @router.get("/{channel_id}", response_model=List[PostResponse])
     async def get_channel_posts(
         channel_id: str,
-        page: int = 1,
-        limit: int = 20,
+        limit: int = 10,
+        before_sequence: Optional[int] = None,  # Get posts before this sequence number
         current_user: dict = Depends(get_current_user)
     ):
-        """Get posts from a channel"""
+        """Get posts from a channel with cursor-based pagination"""
         try:
             # Check if channel exists and user has access
             channel = await db.chats.find_one({"_id": ObjectId(channel_id)})
@@ -122,32 +131,31 @@ def create_post_router(db: AsyncIOMotorDatabase) -> APIRouter:
                     detail="You must be subscribed to view channel posts"
                 )
             
-            # Calculate skip value for pagination
-            skip = (page - 1) * limit
+            # Build query for cursor-based pagination
+            query = {"channel_id": channel_id}
+            if before_sequence:
+                query["sequence_number"] = {"$lt": before_sequence}
             
-            # Get posts from database
-            posts_cursor = db.posts.find(
-                {"channel_id": channel_id}
-            ).sort("created_at", -1).skip(skip).limit(limit)
+            # Get posts from database - sorted by sequence number descending
+            posts_cursor = db.posts.find(query).sort("sequence_number", -1).limit(limit)
             
             posts = await posts_cursor.to_list(length=limit)
             
+            # For frontend display, reverse the order so oldest posts appear first
+            # This maintains chat-like chronological order (oldest to newest)
+            posts.reverse()
+            
             # Convert to PostResponse objects
-            post_responses = []
+            result = []
             for post_doc in posts:
                 # Get author info
                 author = await db.users.find_one({"_id": ObjectId(post_doc["author_id"])})
                 
-                # Increment view count for this post
-                await db.posts.update_one(
-                    {"_id": post_doc["_id"]},
-                    {"$inc": {"views": 1}}
-                )
-                
-                post_responses.append(PostResponse(
+                result.append(PostResponse(
                     id=str(post_doc["_id"]),
                     channel_id=post_doc["channel_id"],
                     author_id=post_doc["author_id"],
+                    sequence_number=post_doc.get("sequence_number", 0),
                     author_name=author.get("name") if author else "Unknown",
                     author_avatar=author.get("avatar") if author else None,
                     channel_name=channel.get("name"),
@@ -156,12 +164,12 @@ def create_post_router(db: AsyncIOMotorDatabase) -> APIRouter:
                     media_type=post_doc.get("media_type"),
                     post_type=post_doc.get("post_type", "text"),
                     reactions=post_doc.get("reactions", {}),
-                    views=post_doc.get("views", 0) + 1,  # Include the incremented view
+                    views=post_doc.get("views", 0),
                     comments_count=post_doc.get("comments_count", 0),
-                    created_at=post_doc.get("created_at")
+                    created_at=post_doc["created_at"]
                 ))
             
-            return post_responses
+            return result
             
         except HTTPException:
             raise

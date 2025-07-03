@@ -19,6 +19,16 @@ const MainApp = ({ user, onLogout, onUserUpdate }) => {
   const [activeView, setActiveView] = useState('chats');
   const [selectedChat, setSelectedChat] = useState(null);
   const [selectedApp, setSelectedApp] = useState(null);
+  
+  // Handle view change with chat reset
+  const handleViewChange = (newView) => {
+    // Reset selected chat/app when switching views
+    if (newView !== activeView) {
+      setSelectedChat(null);
+      setSelectedApp(null);
+    }
+    setActiveView(newView);
+  };
   const [chats, setChats] = useState([]);
   const [channels, setChannels] = useState([]);
   const [groups, setGroups] = useState([]);
@@ -93,6 +103,20 @@ const MainApp = ({ user, onLogout, onUserUpdate }) => {
     setSelectedApp(null); // Clear selected app
   };
 
+  const handleChannelUpdated = (updatedChannel) => {
+    if (activeView === 'channels') {
+      setChannels(prevChannels => 
+        prevChannels.map(channel => 
+          channel.id === updatedChannel.id ? updatedChannel : channel
+        )
+      );
+      // Also update selectedChat if it's the same channel
+      if (selectedChat && selectedChat.id === updatedChannel.id) {
+        setSelectedChat(updatedChannel);
+      }
+    }
+  };
+
   const handleAppInstalled = (app) => {
     toast({
       title: "App Installed",
@@ -148,7 +172,7 @@ const MainApp = ({ user, onLogout, onUserUpdate }) => {
       <div className={`${(selectedChat || selectedApp || activeView === 'wallet') ? 'hidden lg:block' : 'block'} h-full`}>
         <Sidebar 
           activeView={activeView}
-          onViewChange={setActiveView}
+          onViewChange={handleViewChange}
           user={user}
           onLogout={onLogout}
         />
@@ -201,7 +225,7 @@ const MainApp = ({ user, onLogout, onUserUpdate }) => {
                 selectedChannel={selectedChat}
                 onSelectChannel={handleSelectChat}
                 onChannelCreated={handleChatCreated}
-                onUpdateChannel={handleChatCreated}
+                onUpdateChannel={handleChannelUpdated}
                 isLoading={isLoading}
                 currentUser={currentUser}
                 searchQuery={searchQuery}
@@ -306,7 +330,7 @@ const MainApp = ({ user, onLogout, onUserUpdate }) => {
         
         {activeView === 'wallet' && (
           <div className="w-full">
-            <WalletInterface user={currentUser} onBackToMenu={() => setActiveView('chats')} />
+            <WalletInterface user={currentUser} onBackToMenu={() => handleViewChange('chats')} />
           </div>
         )}
         

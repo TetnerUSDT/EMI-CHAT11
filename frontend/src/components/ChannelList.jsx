@@ -272,14 +272,13 @@ const ChannelList = ({
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-              className="pl-10 bg-slate-700 border-slate-600 text-white placeholder-gray-400 focus:ring-emerald-500 focus:border-emerald-500"
+              className="h-9 pl-10 bg-slate-700 border-slate-600 text-white placeholder-gray-400 focus:ring-emerald-500 focus:border-emerald-500"
             />
           </div>
           <Button
             onClick={handleSearch}
             disabled={isSearching}
-            size="sm"
-            className="bg-emerald-600 hover:bg-emerald-700"
+            className="h-9 px-4 bg-emerald-600 hover:bg-emerald-700 text-sm"
           >
             {isSearching ? '...' : 'Search'}
           </Button>
@@ -287,7 +286,7 @@ const ChannelList = ({
       </div>
 
       {/* Channel List */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto chat-scrollbar">
         {isLoading ? (
           <div className="p-8 text-center text-gray-400">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400 mx-auto mb-2"></div>
@@ -307,7 +306,7 @@ const ChannelList = ({
             return (
               <div
                 key={channel.id}
-                className={`p-4 border-b border-slate-700/50 cursor-pointer transition-all duration-200 hover:bg-slate-700/50 ${
+                className={`px-3 py-2.5 border-b border-slate-700/50 cursor-pointer transition-all duration-200 hover:bg-slate-700/50 ${
                   isSelected ? 'bg-emerald-600/20 border-l-4 border-l-emerald-500' : ''
                 }`}
                 onClick={() => subscribed && onSelectChannel(channel)}
@@ -366,19 +365,16 @@ const ChannelList = ({
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-between mt-1">
-                      <p className="text-sm text-gray-400 truncate">
-                        {channel.description || (channel.last_message_id ? 'New message' : 'No messages yet')}
-                      </p>
+                    {/* Channel username and subscriber count with negative margin to move up */}
+                    <div className="flex items-center justify-between -mt-1">
+                      {channel.channel_username && (
+                        <p className="text-xs text-gray-500">@{channel.channel_username}</p>
+                      )}
                       <div className="flex items-center space-x-1 text-xs text-gray-500">
                         <Users className="w-3 h-3" />
                         <span>{channel.subscriber_count || 0}</span>
                       </div>
                     </div>
-                    
-                    {channel.channel_username && (
-                      <p className="text-xs text-gray-500 mt-1">@{channel.channel_username}</p>
-                    )}
                   </div>
                 </div>
               </div>

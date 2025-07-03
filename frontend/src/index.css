@@ -124,3 +124,27 @@ code {
 .reaction-picker::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.2);
 }
+
+/* Custom scrollbar for chat areas */
+.chat-scrollbar::-webkit-scrollbar {
+  width: 3px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-scrollbar::-webkit-scrollbar-thumb {
+  background: #10b981; /* emerald-500 - green color like buttons */
+  border-radius: 2px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #059669; /* emerald-600 - darker green on hover */
+}
+
+/* Firefox scrollbar styling */
+.chat-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #10b981 transparent;
+}

@@ -28,6 +28,7 @@ import VoiceRecorder from './VoiceRecorder';
 import FileUploader from './FileUploader';
 import ChannelPost from './ChannelPost';
 import PostCreator from './PostCreator';
+import ImagePostModal from './ImagePostModal';
 import { chatAPI, userAPI, postAPI } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -36,12 +37,20 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [hasMorePosts, setHasMorePosts] = useState(true);
+  const [isLoadingMorePosts, setIsLoadingMorePosts] = useState(false);
+  const [shouldScrollToBottom, setShouldScrollToBottom] = useState(false);
+  const scrollContainerRef = useRef(null);
   const [showStickers, setShowStickers] = useState(false);
   const [otherUser, setOtherUser] = useState(null);
   const [isLoadingUser, setIsLoadingUser] = useState(false);
   const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
   const [showFileUploader, setShowFileUploader] = useState(false);
   const [showPostCreator, setShowPostCreator] = useState(false);
+  const [showImagePostModal, setShowImagePostModal] = useState(false);
+  const [draggedImageFile, setDraggedImageFile] = useState(null);
+  const [draggedImagePreview, setDraggedImagePreview] = useState(null);
+  const [isDragOver, setIsDragOver] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -64,16 +73,49 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
   }, [chat?.id, isChannel]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, posts]);
+    // Only scroll to bottom when explicitly requested (new posts added, not pagination)
+    if (shouldScrollToBottom) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      setShouldScrollToBottom(false);
+    }
+  }, [posts, shouldScrollToBottom]);
 
-  const loadChannelPosts = async () => {
+  const loadChannelPosts = async (beforeSequence = null, isLoadMore = false) => {
     if (!chat?.id) return;
     
-    setIsLoading(true);
+    if (!isLoadMore) {
+      setIsLoading(true);
+    } else {
+      setIsLoadingMorePosts(true);
+    }
+    
     try {
-      const channelPosts = await postAPI.getChannelPosts(chat.id);
-      setPosts(channelPosts);
+      if (!isLoadMore) {
+        // Первоначальная загрузка - получаем последние 10 постов
+        const channelPosts = await postAPI.getChannelPosts(chat.id, 10, null);
+        setPosts(channelPosts);
+        setHasMorePosts(channelPosts.length === 10);
+        setShouldScrollToBottom(true); // Scroll to bottom on initial load
+      } else {
+        // Пагинация - загружаем более старые посты
+        const channelPosts = await postAPI.getChannelPosts(chat.id, 10, beforeSequence);
+        
+        if (channelPosts.length > 0) {
+          // Фильтруем дублирующие посты для дополнительной защиты
+          const existingPostIds = new Set(posts.map(post => post.id));
+          const newPosts = channelPosts.filter(post => !existingPostIds.has(post.id));
+          
+          if (newPosts.length > 0) {
+            // Добавляем только новые посты в начало массива
+            setPosts(prevPosts => [...newPosts, ...prevPosts]);
+          }
+          
+          setHasMorePosts(channelPosts.length === 10);
+        } else {
+          setHasMorePosts(false);
+        }
+      }
+      
     } catch (error) {
       console.error('Error loading channel posts:', error);
       toast({
@@ -82,7 +124,52 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
         variant: "destructive"
       });
     } finally {
-      setIsLoading(false);
+      if (!isLoadMore) {
+        setIsLoading(false);
+      } else {
+        setIsLoadingMorePosts(false);
+      }
+    }
+  };
+
+  const loadMorePosts = async () => {
+    if (!hasMorePosts || isLoadingMorePosts || posts.length === 0) return;
+    
+    // Получаем минимальный sequence_number из текущих постов
+    const oldestPost = posts[0]; // Первый пост - самый старый
+    const beforeSequence = oldestPost.sequence_number;
+    
+    await loadChannelPosts(beforeSequence, true);
+  };
+
+  const checkIfNeedMorePosts = () => {
+    if (!scrollContainerRef.current || !hasMorePosts || isLoadingMorePosts) return;
+    
+    const container = scrollContainerRef.current;
+    const { scrollHeight, clientHeight } = container;
+    
+    // If content height is less than or equal to container height,
+    // load more posts automatically
+    if (scrollHeight <= clientHeight && hasMorePosts) {
+      console.log('Auto-loading more posts because content fits in container');
+      loadMorePosts();
+    }
+  };
+
+  // Check if we need to load more posts when posts change
+  useEffect(() => {
+    if (isChannel && posts.length > 0) {
+      // Use setTimeout to ensure DOM is updated
+      setTimeout(checkIfNeedMorePosts, 100);
+    }
+  }, [posts, isChannel]);
+
+  const handleScroll = (e) => {
+    const { scrollTop } = e.target;
+    
+    // Загружаем больше постов когда прокручиваем к началу (вверх)
+    if (scrollTop < 100 && hasMorePosts && !isLoadingMorePosts && isChannel) {
+      loadMorePosts();
     }
   };
 
@@ -138,13 +225,34 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
     setMessage('');
     
     try {
-      await chatAPI.sendMessage(chat.id, {
-        content: messageText,
-        message_type: 'text'
-      });
-      
-      // Reload messages from server instead of adding locally
-      await loadMessages();
+      if (isChannel) {
+        // В канале отправляем как пост
+        const postData = {
+          text: messageText,
+          media_url: null,
+          media_type: null
+        };
+
+        const newPost = await postAPI.createPost(chat.id, postData);
+        
+        // Добавляем пост сразу в UI для мгновенного отображения
+        setPosts(prevPosts => [...prevPosts, newPost]);
+        setShouldScrollToBottom(true); // Trigger scroll for new posts
+        
+        toast({
+          title: "Сообщение отправлено",
+          description: "Ваше сообщение опубликовано в канале."
+        });
+      } else {
+        // В обычном чате отправляем как сообщение
+        await chatAPI.sendMessage(chat.id, {
+          content: messageText,
+          message_type: 'text'
+        });
+        
+        // Reload messages from server instead of adding locally
+        await loadMessages();
+      }
       
       if (onSendMessage) {
         onSendMessage(messageText);
@@ -197,8 +305,9 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
 
       const createdPost = await postAPI.createPost(chat.id, postData);
       
-      // Add the new post to the beginning of the posts array
-      setPosts(prevPosts => [createdPost, ...prevPosts]);
+      // Add the new post to the end of the posts array (like in chat)
+      setPosts(prevPosts => [...prevPosts, createdPost]);
+      setShouldScrollToBottom(true); // Trigger scroll for new posts
       
       toast({
         title: "Post Created",
@@ -251,6 +360,99 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
       title: "Share",
       description: "Share feature coming soon!",
     });
+  };
+
+  // Drag & Drop functions for image posts
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isChannel && canPost) {
+      setIsDragOver(true);
+    }
+  };
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isChannel && canPost) {
+      setIsDragOver(true);
+    }
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Only hide overlay if leaving the container element itself, not its children
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setIsDragOver(false);
+    }
+  };
+
+  const handleDrop = async (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    if (!isChannel || !canPost) return;
+    
+    const files = Array.from(e.dataTransfer.files);
+    const imageFile = files.find(file => file.type.startsWith('image/'));
+    
+    if (imageFile) {
+      // Convert to base64 for preview and storage
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setDraggedImageFile(imageFile);
+        setDraggedImagePreview(event.target.result);
+        setShowImagePostModal(true);
+      };
+      reader.readAsDataURL(imageFile);
+    } else {
+      toast({
+        title: "Invalid file type",
+        description: "Please drop an image file.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleImagePostSubmit = async ({ file, caption, compress }) => {
+    try {
+      // Convert file to base64
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const base64Data = event.target.result;
+        
+        const postData = {
+          text: caption,
+          media_url: base64Data,
+          media_type: 'image'
+        };
+        
+        const newPost = await postAPI.createPost(chat.id, postData);
+        setPosts(prevPosts => [...prevPosts, newPost]);
+        setShouldScrollToBottom(true); // Trigger scroll for new posts
+        
+        toast({
+          title: "Post Created",
+          description: "Your image post has been published successfully!"
+        });
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error creating image post:', error);
+      toast({
+        title: "Failed to create post",
+        description: error.response?.data?.detail || "Please try again.",
+        variant: "destructive"
+      });
+      throw error;
+    }
+  };
+
+  const handleCloseImagePostModal = () => {
+    setShowImagePostModal(false);
+    setDraggedImageFile(null);
+    setDraggedImagePreview(null);
   };
 
   const handleVoiceMessage = async (voiceData) => {
@@ -437,13 +639,31 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
       </div>
 
       {/* Messages/Posts */}
-      <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${
-        isChannel 
-          ? chat?.background_style === 'dark-structure' 
-            ? 'bg-dark-structure' 
-            : 'bg-default-dark'
-          : ''
-      }`}>
+      <div 
+        ref={scrollContainerRef}
+        className={`flex-1 overflow-y-auto p-4 space-y-4 relative chat-scrollbar ${
+          isChannel 
+            ? chat?.background_style === 'dark-structure' 
+              ? 'bg-dark-structure' 
+              : 'bg-default-dark'
+            : ''
+        }`}
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        onScroll={handleScroll}
+      >
+        {/* Drag overlay for channels - fixed positioning to cover visible viewport */}
+        {isDragOver && isChannel && canPost && (
+          <div className="fixed inset-0 bg-blue-600/20 border-2 border-dashed border-blue-400 flex items-center justify-center z-50 backdrop-blur-sm">
+            <div className="text-center text-white">
+              <div className="text-4xl mb-2">📷</div>
+              <p className="text-lg font-semibold">Отпустите для создания поста</p>
+              <p className="text-sm opacity-75">Изображение будет добавлено как пост в канал</p>
+            </div>
+          </div>
+        )}
         {isLoading ? (
           <div className="flex justify-center items-center h-full">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400"></div>
@@ -451,6 +671,28 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
         ) : isChannel ? (
           /* Channel Posts - Aligned to left */
           <div className="flex flex-col items-start space-y-4">
+            {/* Load more button for cases when auto-loading doesn't work */}
+            {hasMorePosts && !isLoadingMorePosts && (
+              <div className="flex justify-center w-full py-2">
+                <Button
+                  onClick={loadMorePosts}
+                  variant="outline"
+                  size="sm"
+                  className="border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white"
+                >
+                  Загрузить старые сообщения
+                </Button>
+              </div>
+            )}
+            
+            {/* Loading more posts indicator */}
+            {isLoadingMorePosts && (
+              <div className="flex justify-center items-center w-full py-4">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-400"></div>
+                <span className="ml-2 text-gray-400 text-sm">Загружаем старые посты...</span>
+              </div>
+            )}
+            
             {posts.length === 0 ? (
               <div className="flex justify-center items-center h-full text-gray-400 w-full">
                 <div className="text-center">
@@ -466,6 +708,7 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
                 <ChannelPost
                   key={post.id}
                   post={post}
+                  channel={chat}
                   currentUser={currentUser}
                   onReact={handleReactToPost}
                   onComment={handleCommentOnPost}
@@ -587,7 +830,13 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
 
       {/* Input - Hide for channels if user can't post */}
       {(!isChannel || canPost) && (
-      <div className="p-4 border-t border-slate-700 bg-slate-800/80 backdrop-blur-sm relative">
+      <div 
+        className="p-4 border-t border-slate-700 bg-slate-800/80 backdrop-blur-sm relative"
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
         <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
           <Button
             type="button"
@@ -649,6 +898,15 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
         </form>
         </div>
       )}
+
+      {/* Image Post Modal */}
+      <ImagePostModal 
+        isOpen={showImagePostModal}
+        onClose={handleCloseImagePostModal}
+        onSubmit={handleImagePostSubmit}
+        imageFile={draggedImageFile}
+        imagePreview={draggedImagePreview}
+      />
     </div>
   );
 };
