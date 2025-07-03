@@ -100,10 +100,14 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
         // Пагинация - загружаем более старые посты
         const channelPosts = await postAPI.getChannelPosts(chat.id, 10, beforeSequence);
         
+        console.log(`Loaded ${channelPosts.length} older posts for beforeSequence=${beforeSequence}`);
+        
         if (channelPosts.length > 0) {
           // Фильтруем дублирующие посты для дополнительной защиты
           const existingPostIds = new Set(posts.map(post => post.id));
           const newPosts = channelPosts.filter(post => !existingPostIds.has(post.id));
+          
+          console.log(`Adding ${newPosts.length} new posts to existing ${posts.length} posts`);
           
           if (newPosts.length > 0) {
             // Добавляем только новые посты в начало массива
@@ -112,6 +116,7 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
           
           setHasMorePosts(channelPosts.length === 10);
         } else {
+          console.log('No more posts available');
           setHasMorePosts(false);
         }
       }
@@ -133,11 +138,16 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
   };
 
   const loadMorePosts = async () => {
-    if (!hasMorePosts || isLoadingMorePosts || posts.length === 0) return;
+    if (!hasMorePosts || isLoadingMorePosts || posts.length === 0) {
+      console.log('Cannot load more posts:', { hasMorePosts, isLoadingMorePosts, postsLength: posts.length });
+      return;
+    }
     
     // Получаем минимальный sequence_number из текущих постов
     const oldestPost = posts[0]; // Первый пост - самый старый
     const beforeSequence = oldestPost.sequence_number;
+    
+    console.log(`Loading more posts before sequence ${beforeSequence}, oldest post:`, oldestPost);
     
     await loadChannelPosts(beforeSequence, true);
   };
@@ -150,7 +160,7 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
     
     // If content height is less than or equal to container height,
     // load more posts automatically
-    if (scrollHeight <= clientHeight && hasMorePosts) {
+    if (scrollHeight <= clientHeight && hasMorePosts && posts.length > 0) {
       console.log('Auto-loading more posts because content fits in container');
       loadMorePosts();
     }
@@ -165,10 +175,12 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
   }, [posts, isChannel]);
 
   const handleScroll = (e) => {
-    const { scrollTop } = e.target;
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
     
     // Загружаем больше постов когда прокручиваем к началу (вверх)
-    if (scrollTop < 100 && hasMorePosts && !isLoadingMorePosts && isChannel) {
+    // Увеличиваем зону срабатывания до 200px для лучшего UX
+    if (scrollTop < 200 && hasMorePosts && !isLoadingMorePosts && isChannel && posts.length > 0) {
+      console.log('Loading more posts on scroll', { scrollTop, hasMorePosts, isLoadingMorePosts });
       loadMorePosts();
     }
   };
@@ -671,25 +683,25 @@ const ChatWindow = ({ chat, currentUser, onSendMessage, onBack }) => {
         ) : isChannel ? (
           /* Channel Posts - Aligned to left */
           <div className="flex flex-col items-start space-y-4">
-            {/* Load more button for cases when auto-loading doesn't work */}
-            {hasMorePosts && !isLoadingMorePosts && (
+            {/* Load more button - Always show when there are more posts to load */}
+            {hasMorePosts && posts.length > 0 && (
               <div className="flex justify-center w-full py-2">
                 <Button
                   onClick={loadMorePosts}
                   variant="outline"
                   size="sm"
-                  className="border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white"
+                  disabled={isLoadingMorePosts}
+                  className="border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white disabled:opacity-50"
                 >
-                  Загрузить старые сообщения
+                  {isLoadingMorePosts ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-emerald-400 mr-2"></div>
+                      Загружаем...
+                    </>
+                  ) : (
+                    'Загрузить старые сообщения'
+                  )}
                 </Button>
-              </div>
-            )}
-            
-            {/* Loading more posts indicator */}
-            {isLoadingMorePosts && (
-              <div className="flex justify-center items-center w-full py-4">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-400"></div>
-                <span className="ml-2 text-gray-400 text-sm">Загружаем старые посты...</span>
               </div>
             )}
             

@@ -141,6 +141,11 @@ def create_post_router(db: AsyncIOMotorDatabase) -> APIRouter:
             
             posts = await posts_cursor.to_list(length=limit)
             
+            # Log debug information
+            logger.info(f"Channel posts query: {query}, found {len(posts)} posts, limit: {limit}")
+            if posts:
+                logger.info(f"Sequence numbers: {[p.get('sequence_number', 0) for p in posts]}")
+            
             # For frontend display, reverse the order so oldest posts appear first
             # This maintains chat-like chronological order (oldest to newest)
             posts.reverse()
